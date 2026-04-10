@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BALSEC 내 립 기록</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Apple SD Gothic Neo',sans-serif;background:#fff7f8;color:#1a1a1a}
+.header{background:#fff;border-bottom:1px solid #f0d0da;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+.logo{font-size:30px;font-weight:900;color:#111;letter-spacing:-1px}
+.wrap{max-width:980px;margin:0 auto;padding:18px 14px 40px}
+.grid{display:grid;grid-template-columns:320px 1fr;gap:18px}
+.card{background:#fff;border:1px solid #f0d0da;border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(217,79,122,.06)}
+.badge{display:inline-block;padding:6px 12px;border-radius:999px;background:#fde8ef;color:#a33355;font-size:12px;font-weight:800;margin-bottom:10px}
+.title{font-size:26px;font-weight:900;line-height:1.22;margin-bottom:8px}
+.sub{font-size:13px;color:#777;line-height:1.7}
+.profile-name{font-size:26px;font-weight:900;margin:6px 0 8px}
+.muted{font-size:13px;color:#64748b;line-height:1.6}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.swatch{width:30px;height:30px;border-radius:999px;border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px #f0d0da}
+.kv{display:grid;gap:10px;margin-top:14px}
+.kv div{font-size:13px;color:#475569;line-height:1.6}
+.kv strong{color:#111827}
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.metric{background:#fff7fa;border:1px solid #f0d0da;border-radius:18px;padding:16px}
+.metric .k{font-size:12px;color:#64748b;font-weight:700;margin-bottom:8px}
+.metric .v{font-size:22px;font-weight:900;line-height:1.15}
+.section-title{font-size:20px;font-weight:900;margin-bottom:10px}
+.review-question{margin-bottom:20px}
+.review-q-title{font-size:15px;font-weight:800;color:#334155;margin-bottom:6px}
+.review-q-desc{font-size:12px;color:#64748b;line-height:1.6;margin-bottom:10px}
+.review-stars{display:flex;gap:10px;flex-wrap:wrap}
+.review-star-btn{width:46px;height:46px;border-radius:14px;border:1px solid #f0d0da;background:#fff;color:#cbd5e1;font-size:22px;cursor:pointer;transition:.15s}
+.review-star-btn.active{color:#fb7185;border-color:#fb7185;background:#fff1f4;transform:translateY(-1px)}
+.review-perf-grid{display:grid;gap:12px}
+.review-perf-item{background:#fff7fa;border:1px solid #f0d0da;border-radius:16px;padding:14px}
+.review-perf-label{font-size:13px;font-weight:800;color:#334155;margin-bottom:10px}
+.review-perf-opts,.review-single-opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.review-perf-opt,.review-single-opt{border:1px solid #f0d0da;background:#fff;border-radius:14px;padding:12px 10px;text-align:center;font-size:13px;font-weight:700;color:#475569;cursor:pointer;transition:.15s}
+.review-perf-opt.active,.review-single-opt.active{border-color:#d94f7a;background:#fff1f4;color:#be123c}
+.review-textarea{width:100%;min-height:120px;border:1px solid #f0d0da;border-radius:16px;padding:14px 16px;resize:vertical;font:inherit;color:#334155;background:#fff;line-height:1.7}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.btn-primary,.btn-secondary,.btn-link{border:none;border-radius:14px;padding:14px 16px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary{background:#d94f7a;color:#fff;flex:1}
+.btn-secondary{background:#fff;color:#d94f7a;border:1.5px solid #d94f7a;flex:1}
+.btn-link{background:#fff;border:1.5px solid #f0d0da;color:#6b7280}
+.logic-list{display:grid;gap:10px}
+.insight-card{border-radius:16px;border:1px solid #f0d0da;background:#fff7fa;padding:14px 16px;font-size:14px;font-weight:700;color:#475569;line-height:1.6}
+.table-wrap{overflow:auto;border-radius:18px;border:1px solid #f0d0da;margin-top:10px}
+.table{width:100%;border-collapse:collapse;background:#fff;min-width:860px}
+.table thead{background:#fff7fa}
+.table th,.table td{padding:14px 16px;text-align:left;font-size:13px;border-top:1px solid #f0d0da;vertical-align:top}
+.table th{border-top:none;color:#64748b;font-weight:800}
+.pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#fff1f4;color:#be123c}
+.empty{padding:24px;text-align:center;color:#94a3b8;font-size:14px}
+.helper{margin-top:12px;font-size:12px;line-height:1.7;color:#64748b}
+.mobile-only{display:none}
+.desktop-only{display:block}
+.summary-stack{display:grid;gap:12px}
+.hero-card{padding:20px}
+.profile-inline{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.profile-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.profile-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;background:#fff1f4;color:#a33355;font-size:12px;font-weight:800}
+.product-hero{display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:center}
+.product-thumb{width:84px;height:84px;border-radius:20px;background:linear-gradient(180deg,#f8d9e3 0%,#f0b9c9 100%);border:1px solid #f0d0da;display:flex;align-items:center;justify-content:center;font-size:30px}
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.insight-list{display:grid;gap:10px}
+.insight-card{padding:14px 16px;border-radius:16px;background:#fff7fa;border:1px solid #f0d0da;color:#475569;font-size:14px;font-weight:700;line-height:1.6}
+.history-cards{display:none;gap:10px;margin-top:10px}
+.history-card{border:1px solid #f0d0da;border-radius:18px;background:#fff;padding:14px 14px 12px}
+.history-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.history-name{font-size:15px;font-weight:900;color:#111827}
+.history-date{font-size:12px;color:#64748b}
+.history-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.history-tag{display:inline-block;padding:6px 9px;border-radius:999px;font-size:12px;font-weight:700;background:#fff1f4;color:#be123c}
+.fold-btn{width:100%;margin-top:12px;background:#fff;border:1.5px dashed #f0d0da;border-radius:14px;padding:13px 14px;font-size:14px;font-weight:800;color:#a33355;cursor:pointer}
+.review-fold{display:block}
+.review-content{display:none;margin-top:14px}
+.review-fold.open .review-content{display:block}
+.review-fold.open .fold-btn{background:#fff1f4;border-style:solid}
+.helper-small{font-size:12px;line-height:1.65;color:#64748b;margin-top:8px}
+@media (max-width:900px){
+  .wrap{padding:14px 12px 30px}
+  .header{padding:12px}
+  .logo{font-size:28px}
+  .grid{grid-template-columns:1fr;gap:14px}
+  .card{padding:16px}
+  .title{font-size:22px}
+  .profile-name{font-size:24px}
+  .metric-grid{grid-template-columns:1fr 1fr 1fr}
+  .review-single-opts,.review-perf-opts{grid-template-columns:1fr}
+  .table-wrap{display:none}
+  .history-cards{display:grid}
+}
+@media (max-width:640px){
+  .header{flex-direction:column;align-items:stretch}
+  .header > div:last-child{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .btn-link{padding:12px 12px;font-size:14px}
+  .metric-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .metric:last-child{grid-column:1 / -1}
+  .metric .v{font-size:20px}
+  .quick-actions{grid-template-columns:1fr}
+  .product-hero{grid-template-columns:70px 1fr;gap:12px}
+  .product-thumb{width:70px;height:70px;border-radius:18px;font-size:26px}
+  .review-stars{gap:8px}
+  .review-star-btn{width:42px;height:42px}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">BALSEC</div>
+  <div style="display:flex; gap:10px;"><button class="btn-link" onclick="goBackMembership()">← 엔진 홈</button><button class="btn-link" onclick="goBackEngine()">엔진으로 돌아가기</button><button class="btn-link" onclick="location.href='report.html'">브랜드 리포트</button></div>
+</div>
+
+<div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="card">
+        <div class="badge">MY LIP RECORD</div>
+        <div class="profile-name" id="memberName">내 립 기록</div>
+        <div class="sub">개인정보보다 중요한 건 내 발색 기록이에요. 최근 선택, 후기, 다음 추천 반영을 한 화면에서 확인할 수 있어요.</div>
+        <div class="profile-chip-row" id="profileInfo"></div>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <div class="badge" id="actionBadge">최근 저장 흐름</div>
+        <div class="section-title">최근 저장 제품</div>
+        <div class="product-hero" style="margin-top:8px;">
+          <div class="product-thumb" id="productThumb">💄</div>
+          <div>
+            <div style="font-size:18px;font-weight:800;" id="productName">선택한 제품 없음</div>
+            <div class="muted" id="productMeta">아직 전달된 제품 정보가 없습니다.</div>
+            <div class="helper" id="intensityText" style="margin-top:10px;">발색 강도 정보 없음</div>
+          </div>
+        </div>
+        <div class="quick-actions">
+          <button class="btn-secondary" onclick="goBackEngine()">다시 보기</button>
+          <button class="btn-primary" onclick="toggleReviewFold()">후기 쓰기</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <div class="badge">실시간 요약</div>
+        <div class="metric-grid">
+          <div class="metric"><div class="k">평균 만족도</div><div class="v" id="avgSatisfaction">-</div></div>
+          <div class="metric"><div class="k">평균 매치도</div><div class="v" id="avgMatch">-</div></div>
+          <div class="metric"><div class="k">재구매 의향률</div><div class="v" id="repurchaseRate">-</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="badge">후기 작성</div>
+        <div class="title">사용 후 후기를 남겨주세요</div>
+        <div class="sub">이 후기는 단순 저장이 아니라, 다음 추천을 더 정확하게 만들기 위한 데이터로 활용됩니다.</div>
+        <div class="review-fold" id="reviewFold">
+          <button class="fold-btn" id="reviewFoldBtn" onclick="toggleReviewFold()">후기 입력 열기</button>
+          <div class="review-content">
+
+        <div class="review-question">
+          <div class="review-q-title">Q1. 이 제품 자체에 얼마나 만족하셨나요?</div>
+          <div class="review-q-desc">제품 자체의 전반적인 만족도를 별점으로 남깁니다.</div>
+          <div class="review-stars" id="reviewSatisfactionStars"></div>
+        </div>
+
+        <div class="review-question">
+          <div class="review-q-title">Q2. 추천받은 결과가 나와 얼마나 잘 맞았나요?</div>
+          <div class="review-q-desc">BALSEC 추천 정확도를 측정하는 핵심 지표입니다.</div>
+          <div class="review-stars" id="reviewMatchStars"></div>
+        </div>
+
+        <div class="review-question">
+          <div class="review-q-title">Q3. 실제 제품 사용감은 어땠나요?</div>
+          <div class="review-q-desc">사용감을 체크형으로 남겨 이후 추천에 바로 활용합니다.</div>
+          <div class="review-perf-grid">
+            <div class="review-perf-item">
+              <div class="review-perf-label">발색</div>
+              <div class="review-perf-opts" data-group="colorPayoff">
+                <div class="review-perf-opt" data-value="연함">연함</div>
+                <div class="review-perf-opt" data-value="적당함">적당함</div>
+                <div class="review-perf-opt" data-value="진함">진함</div>
+              </div>
+            </div>
+            <div class="review-perf-item">
+              <div class="review-perf-label">발림성</div>
+              <div class="review-perf-opts" data-group="application">
+                <div class="review-perf-opt" data-value="부드러움">부드러움</div>
+                <div class="review-perf-opt" data-value="보통">보통</div>
+                <div class="review-perf-opt" data-value="뻑뻑함">뻑뻑함</div>
+              </div>
+            </div>
+            <div class="review-perf-item">
+              <div class="review-perf-label">지속력</div>
+              <div class="review-perf-opts" data-group="longevity">
+                <div class="review-perf-opt" data-value="짧음">짧음</div>
+                <div class="review-perf-opt" data-value="보통">보통</div>
+                <div class="review-perf-opt" data-value="김">김</div>
+              </div>
+            </div>
+            <div class="review-perf-item">
+              <div class="review-perf-label">촉촉함</div>
+              <div class="review-perf-opts" data-group="moisture">
+                <div class="review-perf-opt" data-value="건조함">건조함</div>
+                <div class="review-perf-opt" data-value="보통">보통</div>
+                <div class="review-perf-opt" data-value="촉촉함">촉촉함</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-question">
+          <div class="review-q-title">Q4. 직접 후기를 남겨주세요</div>
+          <div class="review-q-desc">선택 입력입니다. 예외 상황이나 세부 인상을 보조적으로 기록합니다.</div>
+          <textarea class="review-textarea" id="reviewFreeReview" placeholder="예: 생각보다 맑고 자연스럽게 올라가서 데일리로 쓰기 좋았어요. 촉촉한 느낌이 특히 마음에 들었어요."></textarea>
+        </div>
+
+        <div class="review-question">
+          <div class="review-q-title">Q5. 다시 구매할 의사가 있나요?</div>
+          <div class="review-q-desc">최종 행동 의사를 기록하는 핵심 지표입니다.</div>
+          <div class="review-single-opts" id="reviewRepurchaseBox">
+            <div class="review-single-opt" data-value="있다">있다</div>
+            <div class="review-single-opt" data-value="잘 모르겠다">잘 모르겠다</div>
+            <div class="review-single-opt" data-value="없다">없다</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" onclick="saveReview()">후기 저장하기</button>
+          <button class="btn-secondary" onclick="resetReviewForm()">입력 초기화</button>
+        </div>
+        <div class="helper-small">후기 저장 후 아래 AI 리포트와 누적 기록에 즉시 반영됩니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <div class="badge">AI 취향 리포트</div>
+        <div class="section-title">다음 추천 반영</div>
+        <div class="insight-list">
+          <div class="insight-card" id="logic1">후기를 저장하면 여기서 핵심 해석이 보여집니다.</div>
+          <div class="insight-card" id="logic2">제품 만족도와 매치도가 함께 높으면 추천 정확도 신호로 해석합니다.</div>
+          <div class="insight-card" id="logic3">촉촉함·지속력·발림성 데이터는 제형 추천에 직접 반영할 수 있습니다.</div>
+          <div class="insight-card" id="logic4">직접 후기는 예외 케이스나 감성 포인트 보조 확인용으로 활용합니다.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <div class="badge">지난 기록</div>
+        <div class="section-title">누적 후기 이력</div>
+        <div class="history-cards" id="historyCards"></div><div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>제품명</th>
+                <th>만족도</th>
+                <th>매치도</th>
+                <th>사용감</th>
+                <th>직접 후기</th>
+                <th>재구매</th>
+              </tr>
+            </thead>
+            <tbody id="reviewTableBody">
+              <tr><td colspan="7" class="empty">아직 저장된 후기가 없습니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="actions">
+          <button class="btn-secondary" onclick="clearAllReviews()">저장된 후기 전체 삭제</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const REVIEW_STORAGE_KEY='balsec_review_stepbcd_v2';
+const MEMBER_STORAGE_KEY='balsecMemberProfile';
+const params=new URLSearchParams(window.location.search);
+const profile=(function(){ try{return JSON.parse(localStorage.getItem(MEMBER_STORAGE_KEY)||'{}')}catch(e){return {}}})();
+const reviewState={satisfaction:0,match:0,colorPayoff:'',application:'',longevity:'',moisture:'',repurchase:''};
+
+function actionLabel(action){
+  if(action==='cart') return '장바구니 흐름';
+  if(action==='buy') return '구매 이어가기';
+  return '좋아요 저장';
+}
+function intensityLabel(v){
+  const map={'1':'1회 발색','2':'2회 발색','3':'3회 발색','4':'4회 발색'};
+  return map[String(v)] || '기본 발색';
+}
+function escapeHtml(str){
+  return String(str||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");
+}
+function renderProfile(){
+  const tone=params.get('tone')||profile.tone||'웜톤 미등록';
+  const intensity=params.get('intensity')||profile.intensity||'2';
+  const action=params.get('action')||profile.action||'like';
+  document.getElementById('memberName').textContent='내 립 기록';
+  document.getElementById('actionBadge').textContent=actionLabel(action);
+  document.getElementById('productName').textContent=params.get('productName')||profile.productName||'선택한 제품 없음';
+  const brand=params.get('brand')||profile.brand||'';
+  const price=params.get('price')||profile.price||'';
+  document.getElementById('productMeta').textContent=[brand,price].filter(Boolean).join(' · ') || '아직 전달된 제품 정보가 없습니다.';
+  const swatch=params.get('swatch')||profile.swatch||'#d9b3bc';
+  document.getElementById('productSwatch')?.style && (document.getElementById('productSwatch').style.background=swatch);
+  const thumb=document.getElementById('productThumb');
+  thumb.style.background='linear-gradient(180deg,'+swatch+' 0%, #f7d7df 100%)';
+  thumb.innerHTML='<span class="swatch" style="background:'+swatch+';width:34px;height:34px"></span>';
+  document.getElementById('intensityText').textContent='최근 저장 강도 · '+intensityLabel(intensity);
+
+  const makeupStyle=profile.makeupStyle||'데일리';
+  const lipUsage=profile.lipUsage||'가볍게 사용';
+  const moods=Array.isArray(profile.moodPrefs)&&profile.moodPrefs.length?profile.moodPrefs[0]:'코랄/MLBB 탐색';
+  document.getElementById('profileInfo').innerHTML=
+    '<div class="profile-chip">피부톤 · '+escapeHtml(tone)+'</div>'+ 
+    '<div class="profile-chip">최근 강도 · '+escapeHtml(intensityLabel(intensity))+'</div>'+ 
+    '<div class="profile-chip">메이크업 · '+escapeHtml(makeupStyle)+'</div>'+ 
+    '<div class="profile-chip">립 사용 · '+escapeHtml(lipUsage)+'</div>'+ 
+    '<div class="profile-chip">선호 무드 · '+escapeHtml(moods)+'</div>';
+}
+function getReviewRecords(){ try{return JSON.parse(localStorage.getItem(REVIEW_STORAGE_KEY)||'[]')}catch(e){return []} }
+function setReviewRecords(list){ localStorage.setItem(REVIEW_STORAGE_KEY,JSON.stringify(list)); }
+function renderReviewStarGroup(containerId,key){
+  const box=document.getElementById(containerId); box.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const btn=document.createElement('button');
+    btn.className='review-star-btn'+(reviewState[key]>=i?' active':'');
+    btn.type='button'; btn.textContent='★';
+    btn.onclick=()=>{ reviewState[key]=i; renderReviewStarGroup(containerId,key); };
+    box.appendChild(btn);
+  }
+}
+function initOptionGroups(){
+  document.querySelectorAll('.review-perf-opts').forEach(group=>{
+    const key=group.dataset.group;
+    group.querySelectorAll('.review-perf-opt').forEach(item=>{
+      item.onclick=()=>{
+        reviewState[key]=item.dataset.value;
+        group.querySelectorAll('.review-perf-opt').forEach(el=>el.classList.remove('active'));
+        item.classList.add('active');
+      };
+    });
+  });
+  document.querySelectorAll('#reviewRepurchaseBox .review-single-opt').forEach(item=>{
+    item.onclick=()=>{
+      reviewState.repurchase=item.dataset.value;
+      document.querySelectorAll('#reviewRepurchaseBox .review-single-opt').forEach(el=>el.classList.remove('active'));
+      item.classList.add('active');
+    };
+  });
+}
+function resetReviewForm(){
+  reviewState.satisfaction=0; reviewState.match=0; reviewState.colorPayoff=''; reviewState.application=''; reviewState.longevity=''; reviewState.moisture=''; reviewState.repurchase='';
+  document.getElementById('reviewFreeReview').value='';
+  renderReviewStarGroup('reviewSatisfactionStars','satisfaction');
+  renderReviewStarGroup('reviewMatchStars','match');
+  document.querySelectorAll('.review-perf-opt,.review-single-opt').forEach(el=>el.classList.remove('active'));
+}
+function countValues(arr){ return arr.reduce((a,c)=>{a[c]=(a[c]||0)+1; return a;},{}); }
+function topKey(obj){ const entries=Object.entries(obj); if(!entries.length) return '-'; entries.sort((a,b)=>b[1]-a[1]); return entries[0][0]; }
+function topColorSentence(colorCounts){
+  const top=topKey(colorCounts);
+  if(top==='진함') return '선명하고 또렷한 발색에서 만족도가 높습니다.';
+  if(top==='연함') return '과하지 않고 은은한 발색에서 만족도가 높습니다.';
+  return '적당한 발색 강도에서 만족도가 높습니다.';
+}
+function renderReviewSummary(){
+  const reviews=getReviewRecords();
+  if(!reviews.length){
+    document.getElementById('avgSatisfaction').textContent='-';
+    document.getElementById('avgMatch').textContent='-';
+    document.getElementById('repurchaseRate').textContent='-';
+    return;
+  }
+  const avgS=(reviews.reduce((a,b)=>a+Number(b.satisfaction),0)/reviews.length).toFixed(1);
+  const avgM=(reviews.reduce((a,b)=>a+Number(b.match),0)/reviews.length).toFixed(1);
+  const repRate=Math.round((reviews.filter(r=>r.repurchase==='있다').length/reviews.length)*100);
+  document.getElementById('avgSatisfaction').textContent=avgS+' / 5';
+  document.getElementById('avgMatch').textContent=avgM+' / 5';
+  document.getElementById('repurchaseRate').textContent=repRate+'%';
+  const colorCounts=countValues(reviews.map(r=>r.colorPayoff));
+  const appCounts=countValues(reviews.map(r=>r.application));
+  const longevityCounts=countValues(reviews.map(r=>r.longevity));
+  const moistureCounts=countValues(reviews.map(r=>r.moisture));
+  document.getElementById('logic1').textContent=avgM>=4.0?'✔ 추천받은 결과와 실제 매치도가 높아 현재 추천 로직의 적합도가 좋은 편입니다.':'✔ 매치도가 상대적으로 낮아 추천 기준 보정이 필요할 수 있습니다.';
+  document.getElementById('logic2').textContent='✔ '+topColorSentence(colorCounts);
+  document.getElementById('logic3').textContent='✔ 촉촉함은 '+topKey(moistureCounts)+', 발림성은 '+topKey(appCounts)+', 지속력은 '+topKey(longevityCounts)+' 평가가 가장 많습니다.';
+  document.getElementById('logic4').textContent=repRate>=60?'✔ 다음 추천에서 현재 제품과 유사한 계열·제형이 우선 노출됩니다.':'✔ 다음 추천에서 제형 또는 컬러 계열 조정이 필요합니다.';
+}
+function renderReviewTable(){
+  const tbody=document.getElementById('reviewTableBody');
+  const reviews=getReviewRecords();
+  if(!reviews.length){ tbody.innerHTML='<tr><td colspan="7" class="empty">아직 저장된 후기가 없습니다.</td></tr>'; return; }
+  tbody.innerHTML=reviews.map(r=>'<tr><td>'+r.date+'</td><td><strong>'+escapeHtml(r.productName)+'</strong></td><td><span class="pill">'+r.satisfaction+' / 5</span></td><td><span class="pill">'+r.match+' / 5</span></td><td>발색: '+escapeHtml(r.colorPayoff)+'<br>발림성: '+escapeHtml(r.application)+'<br>지속력: '+escapeHtml(r.longevity)+'<br>촉촉함: '+escapeHtml(r.moisture)+'</td><td>'+escapeHtml(r.freeReview||'-')+'</td><td>'+escapeHtml(r.repurchase)+'</td></tr>').join('');
+}
+function renderHistoryCards(){
+  const box=document.getElementById('historyCards');
+  const reviews=getReviewRecords();
+  if(!reviews.length){ box.innerHTML='<div class="history-card"><div class="empty">아직 저장된 후기가 없습니다.</div></div>'; return; }
+  box.innerHTML=reviews.map(r=>'<div class="history-card">'+
+    '<div class="history-top"><div><div class="history-name">'+escapeHtml(r.productName)+'</div><div class="history-date">'+escapeHtml(r.date)+'</div></div><span class="pill">'+r.satisfaction+' / 5</span></div>'+
+    '<div class="muted">매치도 '+r.match+' / 5 · 재구매 '+escapeHtml(r.repurchase)+'</div>'+
+    '<div class="history-tags">'+
+      '<span class="history-tag">발색 '+escapeHtml(r.colorPayoff)+'</span>'+
+      '<span class="history-tag">발림성 '+escapeHtml(r.application)+'</span>'+
+      '<span class="history-tag">지속력 '+escapeHtml(r.longevity)+'</span>'+
+      '<span class="history-tag">촉촉함 '+escapeHtml(r.moisture)+'</span>'+
+    '</div>'+
+    (r.freeReview?'<div class="helper-small">'+escapeHtml(r.freeReview)+'</div>':'')+
+  '</div>').join('');
+}
+function toggleReviewFold(){
+  const wrap=document.getElementById('reviewFold');
+  const btn=document.getElementById('reviewFoldBtn');
+  wrap.classList.toggle('open');
+  btn.textContent=wrap.classList.contains('open')?'후기 입력 닫기':'후기 입력 열기';
+  if(wrap.classList.contains('open')) wrap.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function saveReview(){
+  if(!reviewState.satisfaction||!reviewState.match||!reviewState.colorPayoff||!reviewState.application||!reviewState.longevity||!reviewState.moisture||!reviewState.repurchase){
+    alert('Q1~Q5를 먼저 입력해 주세요.');
+    return;
+  }
+  const entry={
+    date:new Date().toISOString().slice(0,10).replaceAll('-','.'),
+    productName:params.get('productName')||profile.productName||'선택 제품',
+    colorName:params.get('swatch')||profile.swatch||'',
+    satisfaction:reviewState.satisfaction,
+    match:reviewState.match,
+    colorPayoff:reviewState.colorPayoff,
+    application:reviewState.application,
+    longevity:reviewState.longevity,
+    moisture:reviewState.moisture,
+    freeReview:document.getElementById('reviewFreeReview').value.trim(),
+    repurchase:reviewState.repurchase
+  };
+  const records=getReviewRecords();
+  records.unshift(entry);
+  setReviewRecords(records);
+  renderReviewTable();
+  renderHistoryCards();
+  renderReviewSummary();
+  resetReviewForm();
+  alert('후기가 저장되었습니다.');
+}
+function clearAllReviews(){
+  if(!confirm('저장된 후기를 모두 삭제할까요?')) return;
+  localStorage.removeItem(REVIEW_STORAGE_KEY);
+  renderReviewTable();
+  renderHistoryCards();
+  renderReviewSummary();
+}
+
+function goBackMembership(){
+  const q=new URLSearchParams(window.location.search);
+  window.location.href='index.html?'+q.toString();
+}
+
+function goBackEngine(){
+  const q=new URLSearchParams();
+  q.set('registered','1');
+  if(params.get('action')||profile.action) q.set('action', params.get('action')||profile.action);
+  if(params.get('product')||profile.product) q.set('product', params.get('product')||profile.product);
+  if(params.get('intensity')||profile.intensity) q.set('intensity', params.get('intensity')||profile.intensity);
+  window.location.href='index.html?'+q.toString();
+}
+renderProfile();
+renderReviewStarGroup('reviewSatisfactionStars','satisfaction');
+renderReviewStarGroup('reviewMatchStars','match');
+initOptionGroups();
+renderReviewTable();
+renderHistoryCards();
+renderReviewSummary();
+</script>
+</body>
+</html>

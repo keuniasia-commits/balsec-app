@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BALSEC 브랜드 협력 데이터 리포트</title>
+  <style>
+    :root{
+      --bg:#f6f3f1;
+      --panel:#ffffff;
+      --line:#e8dfda;
+      --text:#171312;
+      --muted:#736864;
+      --accent:#c45b77;
+      --accent-soft:#f7e3ea;
+      --shadow:0 10px 30px rgba(30,20,16,.06);
+      --good:#1f8f63;
+      --warn:#c17a1b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background:linear-gradient(180deg,#faf8f6 0%,#f3efec 100%);
+      color:var(--text);
+    }
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px 16px 40px;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .logo{
+      font-size:32px;
+      font-weight:900;
+      letter-spacing:1px;
+      color:#111;
+    }
+    .top-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .pill-btn{
+      border:1px solid var(--line);
+      background:#fff;
+      color:#4b403c;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:800;
+    }
+    .hero{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:22px;
+      margin-bottom:16px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      padding:7px 12px;
+      font-size:12px;
+      font-weight:900;
+      background:var(--accent-soft);
+      color:#8d3b54;
+      margin-bottom:10px;
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:18px;
+      align-items:start;
+    }
+    .hero h1{
+      margin:0 0 10px;
+      font-size:38px;
+      line-height:1.15;
+    }
+    .hero .sub{
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.7;
+      max-width:740px;
+    }
+    .callout{
+      background:#fcf8f6;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:16px;
+    }
+    .callout-title{
+      font-size:14px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+    .callout ul{
+      margin:0;
+      padding-left:18px;
+      color:#5d514d;
+      font-size:14px;
+      line-height:1.7;
+    }
+    .notice{
+      margin-top:12px;
+      font-size:12px;
+      color:#8b7e78;
+      line-height:1.7;
+    }
+    .section{
+      margin-top:18px;
+    }
+    .section-head{
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .section-title{
+      font-size:24px;
+      font-weight:900;
+      line-height:1.2;
+    }
+    .section-sub{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      margin-top:4px;
+    }
+    .kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:12px;
+    }
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .kpi-label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:800;
+      margin-bottom:10px;
+    }
+    .kpi-value{
+      font-size:32px;
+      font-weight:900;
+      line-height:1.1;
+      margin-bottom:8px;
+    }
+    .kpi-note{
+      font-size:13px;
+      line-height:1.6;
+      color:#5f534f;
+    }
+    .good{color:var(--good); font-weight:900;}
+    .warn{color:var(--warn); font-weight:900;}
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    .grid-3{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+    }
+    .mini-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .mini-title{
+      font-size:18px;
+      font-weight:900;
+    }
+    .mini-badge{
+      font-size:12px;
+      font-weight:800;
+      color:#7f4657;
+      background:var(--accent-soft);
+      border-radius:999px;
+      padding:6px 10px;
+    }
+    .rank-list{
+      display:grid;
+      gap:10px;
+    }
+    .rank-item{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:10px;
+      align-items:center;
+      background:#fcf8f6;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px 14px;
+    }
+    .rank-no{
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#111;
+      color:#fff;
+      font-size:12px;
+      font-weight:900;
+    }
+    .rank-title{
+      font-size:14px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+    .rank-meta{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .rank-score{
+      text-align:right;
+    }
+    .rank-score .big{
+      font-size:22px;
+      font-weight:900;
+      line-height:1;
+    }
+    .rank-score .small{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+    .bar-list{
+      display:grid;
+      gap:12px;
+    }
+    .bar-row{
+      display:grid;
+      gap:6px;
+    }
+    .bar-head{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:13px;
+      font-weight:800;
+    }
+    .bar{
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      background:#f1e7e3;
+      overflow:hidden;
+    }
+    .bar-fill{
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg,#e5a2b5 0%, var(--accent) 100%);
+    }
+    .swatch-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .swatch-card{
+      flex:1 1 160px;
+      min-width:0;
+      background:#fcf8f6;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px;
+    }
+    .swatch-top{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .dot{
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      border:2px solid rgba(255,255,255,.75);
+      box-shadow:0 0 0 1px rgba(0,0,0,.04);
+    }
+    .swatch-name{
+      font-size:14px;
+      font-weight:900;
+    }
+    .swatch-meta{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .insight-list{
+      display:grid;
+      gap:10px;
+    }
+    .insight{
+      border:1px solid var(--line);
+      background:#fffaf8;
+      border-radius:18px;
+      padding:14px 16px;
+      font-size:14px;
+      line-height:1.7;
+      color:#4f433f;
+    }
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:22px;
+      background:#fff;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:820px;
+    }
+    thead{
+      background:#fcf8f6;
+    }
+    th,td{
+      padding:14px 16px;
+      text-align:left;
+      font-size:13px;
+      border-top:1px solid var(--line);
+      vertical-align:top;
+    }
+    th{
+      border-top:none;
+      color:#6e625e;
+      font-weight:900;
+    }
+    .tag{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:var(--accent-soft);
+      color:#8d3b54;
+      font-size:12px;
+      font-weight:900;
+      margin:2px 4px 2px 0;
+    }
+    .footer{
+      margin-top:22px;
+      color:#7b6f6a;
+      font-size:12px;
+      line-height:1.8;
+      text-align:center;
+    }
+    @media (max-width:980px){
+      .hero-grid,.grid-2,.grid-3{grid-template-columns:1fr}
+      .kpi-grid{grid-template-columns:1fr 1fr}
+      .hero h1{font-size:30px}
+    }
+    @media (max-width:640px){
+      .wrap{padding:14px 12px 34px}
+      .logo{font-size:28px}
+      .hero{padding:18px}
+      .kpi-grid{grid-template-columns:1fr}
+      .section-title{font-size:22px}
+      .topbar{align-items:flex-start; flex-direction:column;}
+      .top-actions{width:100%}
+      .pill-btn{flex:1 1 auto; text-align:center;}
+    }
+  
+  .report-nav{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="logo">BALSEC</div>
+      <div class="top-actions report-nav">
+        <button class="pill-btn" onclick="location.href='index.html'">엔진 홈</button>
+        <button class="pill-btn" onclick="location.href='record.html'">내 립 기록</button>
+        <div class="pill-btn">브랜드 협력 데모</div>
+        <div class="pill-btn">모바일 대응형</div>
+        <div class="pill-btn">샘플 데이터 기준</div>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="badge">PARTNER DATA REPORT</div>
+      <div class="hero-grid">
+        <div>
+          <h1>브랜드 협력업체용<br>소비자 반응 데이터 리포트</h1>
+          <div class="sub">
+            BALSEC은 단순 후기 페이지가 아니라, <b>피부톤·발색·사용감·추천 정확도·재구매 의향</b>을 한 화면에서 볼 수 있는 데이터 플랫폼입니다.
+            아래 수치는 실제 운영 구조를 기준으로 만든 <b>샘플 리포트</b>이며, 협력 브랜드에게 어떤 항목을 제공할 수 있는지 보여주기 위한 데모입니다.
+          </div>
+          <div class="notice">
+            ※ 본 화면의 수치는 예시 데이터입니다. 실제 서비스 연동 시 브랜드별/제품별 실데이터로 자동 대체 가능합니다.
+          </div>
+        </div>
+        <div class="callout">
+          <div class="callout-title">협력업체가 이 리포트로 바로 얻는 것</div>
+          <ul>
+            <li>피부톤별 실제 반응 차이</li>
+            <li>제품 만족도와 재구매 의향의 간극</li>
+            <li>발림성·지속력·촉촉함 약점 파악</li>
+            <li>추천 정확도와 구매 전환 흐름 확인</li>
+            <li>마케팅 카피에 쓸 소비자 언어 확보</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-title">핵심 KPI 요약</div>
+          <div class="section-sub">협력 브랜드가 가장 먼저 보는 핵심 숫자</div>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="card">
+          <div class="kpi-label">평균 제품 만족도</div>
+          <div class="kpi-value">4.4 / 5</div>
+          <div class="kpi-note"><span class="good">상위권</span> 만족도 유지. 데일리 사용 적합성 평가가 높음.</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">평균 추천 매치도</div>
+          <div class="kpi-value">4.1 / 5</div>
+          <div class="kpi-note">현재 추천 로직 적합도는 양호하나 쿨톤군에서 일부 보정 여지 존재.</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">재구매 의향률</div>
+          <div class="kpi-value">68%</div>
+          <div class="kpi-note">만족도 대비 재구매가 낮은 일부 제품은 제형/지속력 개선 후보.</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label">추천 후 구매 이어가기율</div>
+          <div class="kpi-value">27%</div>
+          <div class="kpi-note"><span class="good">의미 있는 전환</span>. 톤 맞춤형 노출 강화를 통해 상승 여지 큼.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <div class="card">
+        <div class="mini-head">
+          <div class="mini-title">제품 반응 상위 순위</div>
+          <div class="mini-badge">샘플 제품 기준</div>
+        </div>
+        <div class="rank-list">
+          <div class="rank-item">
+            <div class="rank-no">1</div>
+            <div>
+              <div class="rank-title">롬앤 쥬시 래스팅 틴트 23</div>
+              <div class="rank-meta">만족도 4.6 · 매치도 4.4 · 재구매 74%</div>
+            </div>
+            <div class="rank-score">
+              <div class="big">4.6</div>
+              <div class="small">overall</div>
+            </div>
+          </div>
+          <div class="rank-item">
+            <div class="rank-no">2</div>
+            <div>
+              <div class="rank-title">디올 어딕트 421</div>
+              <div class="rank-meta">만족도 4.5 · 매치도 4.0 · 재구매 70%</div>
+            </div>
+            <div class="rank-score">
+              <div class="big">4.5</div>
+              <div class="small">overall</div>
+            </div>
+          </div>
+          <div class="rank-item">
+            <div class="rank-no">3</div>
+            <div>
+              <div class="rank-title">헤라 센슈얼 누드 밤 112</div>
+              <div class="rank-meta">만족도 4.3 · 매치도 4.2 · 재구매 66%</div>
+            </div>
+            <div class="rank-score">
+              <div class="big">4.3</div>
+              <div class="small">overall</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="mini-head">
+          <div class="mini-title">피부톤별 반응</div>
+          <div class="mini-badge">톤 매칭 핵심</div>
+        </div>
+        <div class="bar-list">
+          <div class="bar-row">
+            <div class="bar-head"><span>웜톤 만족도</span><span>4.6 / 5</span></div>
+            <div class="bar"><div class="bar-fill" style="width:92%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-head"><span>쿨톤 만족도</span><span>3.9 / 5</span></div>
+            <div class="bar"><div class="bar-fill" style="width:78%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-head"><span>뉴트럴톤 만족도</span><span>4.2 / 5</span></div>
+            <div class="bar"><div class="bar-fill" style="width:84%"></div></div>
+          </div>
+          <div class="notice" style="margin-top:8px;">
+            웜톤군 반응이 가장 강하고, 쿨톤군은 특정 컬러/제형에 대해 편차가 큼. 협업 브랜드는 톤별 상품 제안과 카피 분리가 필요함.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-title">발색 강도 · 컬러 반응</div>
+          <div class="section-sub">제품 자체보다 “어떻게 발리는가”까지 보는 항목</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="mini-head">
+            <div class="mini-title">발색 강도 선호 비율</div>
+            <div class="mini-badge">1~4회 발색</div>
+          </div>
+          <div class="bar-list">
+            <div class="bar-row">
+              <div class="bar-head"><span>1회 발색</span><span>14%</span></div>
+              <div class="bar"><div class="bar-fill" style="width:14%"></div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-head"><span>2회 발색</span><span>32%</span></div>
+              <div class="bar"><div class="bar-fill" style="width:32%"></div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-head"><span>3회 발색</span><span>38%</span></div>
+              <div class="bar"><div class="bar-fill" style="width:38%"></div></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-head"><span>4회 발색</span><span>16%</span></div>
+              <div class="bar"><div class="bar-fill" style="width:16%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="mini-head">
+            <div class="mini-title">컬러 계열 반응 상위</div>
+            <div class="mini-badge">샘플</div>
+          </div>
+          <div class="swatch-row">
+            <div class="swatch-card">
+              <div class="swatch-top">
+                <div class="dot" style="background:#d97f7f"></div>
+                <div>
+                  <div class="swatch-name">코랄 핑크</div>
+                  <div class="swatch-meta">웜톤 반응 강함</div>
+                </div>
+              </div>
+              <div class="swatch-meta">만족도 4.7 · 재구매 76%</div>
+            </div>
+            <div class="swatch-card">
+              <div class="swatch-top">
+                <div class="dot" style="background:#b76b78"></div>
+                <div>
+                  <div class="swatch-name">로지 모브</div>
+                  <div class="swatch-meta">뉴트럴/쿨 공통 반응</div>
+                </div>
+              </div>
+              <div class="swatch-meta">만족도 4.3 · 재구매 63%</div>
+            </div>
+            <div class="swatch-card">
+              <div class="swatch-top">
+                <div class="dot" style="background:#8f4859"></div>
+                <div>
+                  <div class="swatch-name">딥 베리</div>
+                  <div class="swatch-meta">선명발색 선호층 반응</div>
+                </div>
+              </div>
+              <div class="swatch-meta">만족도 4.0 · 구매전환 31%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid-3">
+      <div class="card">
+        <div class="mini-head">
+          <div class="mini-title">발림성</div>
+          <div class="mini-badge">사용감</div>
+        </div>
+        <div class="bar-list">
+          <div class="bar-row">
+            <div class="bar-head"><span>부드러움</span><span>56%</span></div>
+            <div class="bar"><div class="bar-fill" style="width:56%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-head"><span>보통</span><span>33%</span></div>
+            <div class="bar"><div class="bar-fill" style="width:33%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-head"><span>뻑뻑함</span><span>11%</span></div>
+            <div class="bar"><div class="bar-fill" style="width:11%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="mini-head">
+          <div class="mini-title">지속력</div>
+          <div class="mini-badge">사용감</div>
+        </div>
+        <div class="bar-list">
+          <div class="bar-row">
+            <div class="bar-head"><span>짧음</span><span>19%</span></div>
+            <div class="bar"><div class="bar-fill" style="width:19%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-head"><span>보통</span><span>49%</span></div>
+            <div class="bar"><div class="bar-fill" style="width:49%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-head"><span>김</span><span>32%</span></div>
+            <div class="bar"><div class="bar-fill" style="width:32%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="mini-head">
+          <div class="mini-title">촉촉함</div>
+          <div class="mini-badge">사용감</div>
+        </div>
+        <div class="bar-list">
+          <div class="bar-row">
+            <div class="bar-head"><span>건조함</span><span>15%</span></div>
+            <div class="bar"><div class="bar-fill" style="width:15%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-head"><span>보통</span><span>36%</span></div>
+            <div class="bar"><div class="bar-fill" style="width:36%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-head"><span>촉촉함</span><span>49%</span></div>
+            <div class="bar"><div class="bar-fill" style="width:49%"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <div class="card">
+        <div class="mini-head">
+          <div class="mini-title">브랜드 협업 인사이트</div>
+          <div class="mini-badge">실무 해석</div>
+        </div>
+        <div class="insight-list">
+          <div class="insight">① <b>만족도는 높지만 재구매가 낮은 제품</b>은 제형 유지력 또는 가격 체감 이슈 가능성이 높습니다.</div>
+          <div class="insight">② <b>웜톤군의 코랄 계열 반응</b>은 강하지만, 쿨톤군에서는 로지/모브 보정 제안이 필요합니다.</div>
+          <div class="insight">③ <b>3회 발색 선호 비율이 가장 높아</b> 협업 콘텐츠는 “한 번보다 두세 번 올렸을 때 예쁜 컬러” 방향이 유리합니다.</div>
+          <div class="insight">④ <b>촉촉함 평가는 높고 지속력은 중간</b>이므로, 광고 카피는 “편안함” 중심 + “지속력 개선” 메시지 실험이 필요합니다.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="mini-head">
+          <div class="mini-title">마케팅 카피용 소비자 언어</div>
+          <div class="mini-badge">후기 요약</div>
+        </div>
+        <div style="margin-bottom:10px;">
+          <span class="tag">맑게 올라가요</span>
+          <span class="tag">데일리로 부담 없어요</span>
+          <span class="tag">손등보다 입술에서 더 예뻐요</span>
+          <span class="tag">촉촉해서 편해요</span>
+          <span class="tag">생각보다 톤이 잘 맞아요</span>
+          <span class="tag">겹바를수록 예뻐져요</span>
+        </div>
+        <div class="notice">
+          위 표현은 자유 후기에서 추출 가능한 예시 키워드입니다. 실제 운영 시 브랜드별 긍정 키워드/부정 키워드, 대표 문장, 피부톤별 후기 차이까지 제공 가능합니다.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-title">협력업체 제공 가능 항목표</div>
+          <div class="section-sub">브랜드/제조사/유통사에 전달 가능한 최종 데이터 항목 예시</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>제공 항목</th>
+              <th>활용 목적</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>제품 성과</td>
+              <td>조회수, 선택수, 저장수, 구매 이어가기율, 후기수, 평균 만족도, 평균 매치도, 재구매 의향률</td>
+              <td>제품 성과 판단, 전환 병목 분석</td>
+            </tr>
+            <tr>
+              <td>피부톤 반응</td>
+              <td>웜/쿨/뉴트럴별 반응, 밝기/채도별 선호도, 피부톤별 만족도 및 구매 전환</td>
+              <td>타깃 세분화, 톤별 상품 제안</td>
+            </tr>
+            <tr>
+              <td>발색 강도</td>
+              <td>1~4회 발색 선호 비율, 제품별 최적 발색 강도, 강도별 만족도 변화</td>
+              <td>콘텐츠/상세페이지 발색 가이드 제작</td>
+            </tr>
+            <tr>
+              <td>사용감</td>
+              <td>발색, 발림성, 지속력, 촉촉함 분포 및 상관관계</td>
+              <td>제형 개선, 제품 포지셔닝</td>
+            </tr>
+            <tr>
+              <td>추천 엔진</td>
+              <td>추천 매치도, 추천 후 저장률, 구매 전환율, 보정 필요 제품군</td>
+              <td>추천 정확도 검증, 알고리즘 개선</td>
+            </tr>
+            <tr>
+              <td>정성 후기</td>
+              <td>긍정/부정 키워드, 대표 문장, 이유 분석, 피부톤별 후기 차이</td>
+              <td>마케팅 카피, 상세페이지 문안, VOC 요약</td>
+            </tr>
+            <tr>
+              <td>제품 개선</td>
+              <td>만족도 대비 재구매 낮은 제품, 사용감 불균형, 톤별 편차, 강도별 평가 차이</td>
+              <td>제품 개선 우선순위 선정</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <div class="mini-head">
+          <div class="mini-title">최종 제안 문장</div>
+          <div class="mini-badge">브랜드 제안용</div>
+        </div>
+        <div class="insight">
+          BALSEC은 단순 리뷰를 수집하는 플랫폼이 아니라, <b>피부톤 기반 소비자 반응 데이터</b>를 브랜드가 바로 활용할 수 있도록 구조화하는 협력형 뷰티 데이터 리포트 도구입니다.
+          협업 브랜드는 제품 반응, 톤별 적합도, 사용감 약점, 추천 정확도, 재구매 의향까지 한 번에 확인할 수 있습니다.
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      BALSEC Partner Demo · HTML 협력 제안 페이지 · 샘플 데이터 기반 데모 화면
+    </div>
+  </div>
+</body>
+</html>
