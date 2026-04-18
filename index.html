@@ -825,33 +825,58 @@ select:focus { outline: none; border-color: var(--accent); }
     <div class="logo">BALSEC · 발색 연구소</div>
     <button class="back-btn" onclick="goTo('s1')">←</button>
   </div>
-  <div class="page-title" style="font-size:22px; letter-spacing:.08em; margin-bottom:32px;">JUST 10 SECONDS</div>
+  <div class="page-title" style="font-size:22px; letter-spacing:.08em; margin-bottom:8px;">JUST 10 SECONDS</div>
+  <div style="font-size:12px; color:var(--muted); margin-bottom:24px;">손등을 자연광 아래에서 찍어주세요</div>
 
   <!-- 피부진단 ONE -->
-  <label style="display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:var(--bg); border:1px solid var(--line); border-radius:18px; margin-bottom:10px; cursor:pointer;" for="hand1">
-    <div style="font-size:14px; font-weight:900; color:var(--text); letter-spacing:.04em;">피부진단 · ONE</div>
-    <div style="font-size:20px;">📷</div>
-    <input type="file" id="hand1" accept="image/*" capture="environment" style="display:none;" />
-  </label>
+  <div style="background:var(--bg); border:1px solid var(--line); border-radius:18px; padding:14px 16px; margin-bottom:10px;">
+    <div style="font-size:13px; font-weight:900; color:var(--text); letter-spacing:.04em; margin-bottom:10px;">피부진단 · ONE <span style="font-size:10px; font-weight:700; color:var(--accent); margin-left:4px;">필수</span></div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <label style="display:flex; align-items:center; justify-content:center; gap:6px; padding:11px 8px; background:var(--text); color:#fff; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; letter-spacing:.02em;" for="hand1Camera">
+        📷 촬영
+        <input type="file" id="hand1Camera" accept="image/*" capture="environment" style="display:none;" />
+      </label>
+      <label style="display:flex; align-items:center; justify-content:center; gap:6px; padding:11px 8px; background:var(--white); color:var(--text); border:1.5px solid var(--line); border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; letter-spacing:.02em;" for="hand1Upload">
+        🖼 앨범
+        <input type="file" id="hand1Upload" accept="image/*" style="display:none;" />
+      </label>
+    </div>
+  </div>
   <div class="preview-wrap" id="prev1"><img id="prevImg1" /></div>
 
   <!-- 피부진단 TWO -->
-  <label style="display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:var(--bg); border:1px solid var(--line); border-radius:18px; margin-bottom:10px; cursor:pointer;" for="hand2">
-    <div style="font-size:14px; font-weight:900; color:var(--text); letter-spacing:.04em;">피부진단 · TWO</div>
-    <div style="font-size:20px;">📷</div>
-    <input type="file" id="hand2" accept="image/*" capture="environment" style="display:none;" />
-  </label>
+  <div style="background:var(--bg); border:1px solid var(--line); border-radius:18px; padding:14px 16px; margin-bottom:10px;">
+    <div style="font-size:13px; font-weight:900; color:var(--text); letter-spacing:.04em; margin-bottom:10px;">피부진단 · TWO <span style="font-size:10px; font-weight:700; color:var(--accent); margin-left:4px;">필수</span></div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <label style="display:flex; align-items:center; justify-content:center; gap:6px; padding:11px 8px; background:var(--text); color:#fff; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; letter-spacing:.02em;" for="hand2Camera">
+        📷 촬영
+        <input type="file" id="hand2Camera" accept="image/*" capture="environment" style="display:none;" />
+      </label>
+      <label style="display:flex; align-items:center; justify-content:center; gap:6px; padding:11px 8px; background:var(--white); color:var(--text); border:1.5px solid var(--line); border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; letter-spacing:.02em;" for="hand2Upload">
+        🖼 앨범
+        <input type="file" id="hand2Upload" accept="image/*" style="display:none;" />
+      </label>
+    </div>
+  </div>
   <div class="preview-wrap" id="prev2"><img id="prevImg2" /></div>
 
-  <!-- FACE -->
-  <label style="display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:var(--bg); border:1px dashed var(--line); border-radius:18px; margin-bottom:32px; cursor:pointer;" for="face">
-    <div>
-      <div style="font-size:14px; font-weight:900; color:var(--text); letter-spacing:.04em;">FACE</div>
-      <div style="font-size:10px; color:var(--muted); margin-top:2px;">optional</div>
+  <!-- FACE (optional) -->
+  <div style="background:var(--bg); border:1px dashed var(--line); border-radius:18px; padding:14px 16px; margin-bottom:28px;">
+    <div style="display:flex; align-items:center; gap:6px; margin-bottom:10px;">
+      <div style="font-size:13px; font-weight:900; color:var(--text); letter-spacing:.04em;">FACE</div>
+      <div style="font-size:10px; font-weight:700; color:var(--muted); background:var(--line); border-radius:999px; padding:2px 8px;">optional</div>
     </div>
-    <div style="font-size:20px;">🤳</div>
-    <input type="file" id="face" accept="image/*" capture="user" style="display:none;" />
-  </label>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <label style="display:flex; align-items:center; justify-content:center; gap:6px; padding:11px 8px; background:var(--text); color:#fff; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; letter-spacing:.02em;" for="faceCamera">
+        🤳 셀피
+        <input type="file" id="faceCamera" accept="image/*" capture="user" style="display:none;" />
+      </label>
+      <label style="display:flex; align-items:center; justify-content:center; gap:6px; padding:11px 8px; background:var(--white); color:var(--text); border:1.5px solid var(--line); border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; letter-spacing:.02em;" for="faceUpload">
+        🖼 앨범
+        <input type="file" id="faceUpload" accept="image/*" style="display:none;" />
+      </label>
+    </div>
+  </div>
   <div class="preview-wrap" id="prev3"><img id="prevImg3" /></div>
 
   <button class="btn btn-primary" id="analyzeBtn" disabled onclick="startAnalysis()">분석 시작</button>
@@ -1521,9 +1546,12 @@ function setupUpload(inputId, previewWrapId, previewImgId, stateKey) {
     reader.readAsDataURL(file);
   });
 }
-setupUpload('hand1', 'prev1', 'prevImg1', 'hand1');
-setupUpload('hand2', 'prev2', 'prevImg2', 'hand2');
-setupUpload('face', 'prev3', 'prevImg3', 'face');
+setupUpload('hand1Camera', 'prev1', 'prevImg1', 'hand1');
+setupUpload('hand1Upload', 'prev1', 'prevImg1', 'hand1');
+setupUpload('hand2Camera', 'prev2', 'prevImg2', 'hand2');
+setupUpload('hand2Upload', 'prev2', 'prevImg2', 'hand2');
+setupUpload('faceCamera',  'prev3', 'prevImg3', 'face');
+setupUpload('faceUpload',  'prev3', 'prevImg3', 'face');
 
 function checkAnalyzeReady() {
   const btn = document.getElementById('analyzeBtn');
@@ -2156,7 +2184,9 @@ function restartTest() {
   };
   ['prev1','prev2','prev3'].forEach(id => { document.getElementById(id).style.display='none'; });
   ['prevImg1','prevImg2','prevImg3'].forEach(id => { document.getElementById(id).src=''; });
-  ['hand1','hand2','face'].forEach(id => { document.getElementById(id).value=''; });
+  ['hand1Camera','hand1Upload','hand2Camera','hand2Upload','faceCamera','faceUpload'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
   document.getElementById('analyzeBtn').disabled = true;
   document.getElementById('operatorNote').value = '';
   document.getElementById('makeupStyleSelect').value = '';
