@@ -1011,7 +1011,7 @@ select:focus { outline: none; border-color: var(--accent); }
     </select>
   </div>
 
-  <button class="btn btn-primary" onclick="saveSample()">저장하기</button>
+  <button id="saveBtn" class="btn btn-primary" onclick="saveSample()">저장하기</button>
 </section>
 
 <!-- ══════════════════════════════════════
@@ -1711,6 +1711,11 @@ async function sendToGoogleSheet(sample) {
 // 저장
 // ══════════════════════════════════════
 async function saveSample() {
+
+const btn = document.getElementById('saveBtn');
+if (btn.disabled) return;
+btn.disabled = true;
+
   if (!state.skinRGB) { showToast('피부톤 분석을 먼저 완료해주세요'); return; }
   if (!state.selectedProduct) { showToast('제품을 선택해주세요'); return; }
 
@@ -1768,6 +1773,7 @@ try {
 
   renderSaveComplete(sample, samples.length);
   goTo('s8');
+btn.disabled = false;
 }
 
 function getsamples() {
