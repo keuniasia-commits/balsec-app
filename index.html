@@ -2093,6 +2093,18 @@ function resizeImageIfNeeded(base64, maxDim = 800) {
   });
 }
 
+// ══════════════════════════════════════
+// [v3] record_id 보장 함수
+// 분석 완료 후 또는 goToSim 진입 시 호출
+// 이미 생성된 경우 덮어쓰지 않음 (1회만 생성)
+// ══════════════════════════════════════
+function ensureRecordId() {
+  if (!state.record_id) {
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const rand = Math.floor(Math.random() * 9000) + 1000;
+    state.record_id = date + '-' + rand;
+  }
+}
 
 async function startAnalysis() {
   analysisAborted = false;
@@ -2187,10 +2199,8 @@ async function startAnalysis() {
 
   await new Promise(r => setTimeout(r, 300));
 
-  // ── record_id: 분석 완료 시점에 1회 생성 (피드카드·뷰어·시트 공유) ──
-  const _dateStr = new Date().toISOString().slice(0,10).replace(/-/g,'');
-  const _seq     = String(Math.floor(Math.random() * 9000) + 1000);
-  state.record_id = _dateStr + '-' + _seq;
+  // record_id 보장 (분석 완료 시점에 1회 생성)
+  ensureRecordId();
 
   renderToneResult(avg, result);
   goTo('s4');
@@ -2285,6 +2295,10 @@ function selectProduct(id) {
 // ══════════════════════════════════════
 function goToSim() {
   if (!state.selectedProduct) return;
+
+  // record_id 보장 (분석 없이 진입하는 경우에도 생성)
+  ensureRecordId();
+
   const p = state.selectedProduct;
   document.getElementById('simBrand').textContent = p.brand;
   document.getElementById('simName').textContent = p.name;
@@ -2482,9 +2496,9 @@ async function saveSample() {
     classificationVersion: state.classificationVersion ?? 'lab-v1',
     correctionVersion:     state.correctionVersion     ?? 'bias-v1.1',
     // ── [v3 신규] ID 연결 + 반응 보정 데이터 ────────────────────
-    record_id:      state.record_id    ?? null,
-    finalScore:     state.finalScore   ?? null,        // 상대 100 기준 점수
-    adjustedRate:   match?.adjustedRate ?? match?.rate,
+    record_id:      state.record_id       ?? '',
+    finalScore:     state.finalScore      ?? '',
+    adjustedRate:   match?.adjustedRate   ?? '',
     reactionReason: match?.reactionReason ?? '',
     directionHint:  match?.directionHint  ?? ''
   };
@@ -2754,9 +2768,9 @@ function renderFeedCard() {
   const feed = FEED_DATA[state.balsecType] || FEED_DATA['06'];
   if (!rgb || !res) return;
 
-  // CLIENT ID — record_id 재사용 (분석 완료 시 1회 생성된 값)
-  const displayId = state.record_id || (new Date().toISOString().slice(0,10).replace(/-/g,'') + ' · ' + String(Math.floor(Math.random()*9000)+1000));
-  document.getElementById('fcClientId').textContent = displayId.replace('-', ' · ');
+  // CLIENT ID — ensureRecordId()로 보장된 state.record_id 직접 사용
+  ensureRecordId();
+  document.getElementById('fcClientId').textContent = state.record_id;
   document.getElementById('fcReportLabel').textContent = 'BALSEC LAB REPORT · TYPE ' + (state.balsecType || '—');
 
   // 배지 · 타입명
