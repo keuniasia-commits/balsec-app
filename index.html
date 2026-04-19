@@ -1909,6 +1909,13 @@ function calcLabReaction(product) {
     else               { adj -= 3;  reason = '밝기 대비가 부족해 누드 계열이 다소 칙칙해 보일 수 있습니다'; }
     direction = L >= 68 ? '맑고 밝은 누드 계열이 유리합니다' : '조금 더 선명한 브라운 계열을 권장합니다';
   }
+  // ── Burgundy 계열 ──
+  else if (cg === 'burgundy') {
+    if (a >= 8)        { adj += 5;  reason = '쿨 축 반응이 좋아 버건디 계열이 깊고 선명하게 표현됩니다'; }
+    else if (a >= 5)   { adj += 2;  reason = '버건디 계열이 자연스럽게 어우러집니다'; }
+    else               { adj -= 3;  reason = '쿨 축 반응이 약해 버건디가 다소 탁하게 표현될 수 있습니다'; }
+    direction = L >= 68 ? '맑은 버건디 계열이 더 선명하게 표현됩니다' : '깊이감 있는 버건디 계열이 안정적입니다';
+  }
   // ── 기타 ──
   else {
     adj = 0;
@@ -2093,6 +2100,18 @@ function resizeImageIfNeeded(base64, maxDim = 800) {
   });
 }
 
+// ══════════════════════════════════════
+// [v3] record_id 보장 함수
+// 분석 완료 후 또는 goToSim 진입 시 호출
+// 이미 생성된 경우 덮어쓰지 않음 (1회만 생성)
+// ══════════════════════════════════════
+function ensureRecordId() {
+  if (!state.record_id) {
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const rand = Math.floor(Math.random() * 9000) + 1000;
+    state.record_id = date + '-' + rand;
+  }
+}
 
 async function startAnalysis() {
   analysisAborted = false;
@@ -2187,10 +2206,8 @@ async function startAnalysis() {
 
   await new Promise(r => setTimeout(r, 300));
 
-  // ── record_id: 분석 완료 시점에 1회 생성 (피드카드·뷰어·시트 공유) ──
-  const _dateStr = new Date().toISOString().slice(0,10).replace(/-/g,'');
-  const _seq     = String(Math.floor(Math.random() * 9000) + 1000);
-  state.record_id = _dateStr + '-' + _seq;
+  // record_id 보장 (분석 완료 시점에 1회 생성)
+  ensureRecordId();
 
   renderToneResult(avg, result);
   goTo('s4');
@@ -2206,7 +2223,7 @@ function renderToneResult(rgb, result) {
   document.getElementById('typeSub').textContent = type.sub;
 
   const card = document.getElementById('toneCard');
-  card.className = 'tone-result-card ' + type<script>.cardClass;
+  card.className = 'tone-result-card ' + type.cardClass;
   const badge = document.getElementById('toneBadge');
   badge.className = 'tone-badge-large ' + type.badgeClass;
   badge.textContent = type.badgeText;
@@ -2285,6 +2302,10 @@ function selectProduct(id) {
 // ══════════════════════════════════════
 function goToSim() {
   if (!state.selectedProduct) return;
+
+  // record_id 보장 (분석 없이 진입하는 경우에도 생성)
+  ensureRecordId();
+
   const p = state.selectedProduct;
   document.getElementById('simBrand').textContent = p.brand;
   document.getElementById('simName').textContent = p.name;
@@ -2415,15 +2436,12 @@ async function sendToGoogleSheet(sample) {
 
   const text = await response.text();
 
-  // Google Apps Script는 오류 시에도 HTTP 200 반환
-  // response.ok 체크 제거 — JSON 파싱 실패 시 throw하지 않고 error 객체 반환
   try {
     return JSON.parse(text);
   } catch (e) {
     return { result: 'error', message: '응답 파싱 실패', raw: text };
   }
 }
-
 // ══════════════════════════════════════
 // 저장
 // ══════════════════════════════════════
@@ -2434,6 +2452,9 @@ async function saveSample() {
 
   if (!state.skinRGB) { showToast('피부톤 분석을 먼저 완료해주세요'); btn.disabled = false; return; }
   if (!state.selectedProduct) { showToast('제품을 선택해주세요'); btn.disabled = false; return; }
+
+  // record_id 최종 보장 — 이 시점까지 null이면 여기서 생성
+  ensureRecordId();
 
   const match = calcMatchRate(state.skinRGB, state.selectedProduct, state.intensity);
   const rejectChecks = document.querySelectorAll('#rejectReasons input[type="checkbox"]:checked');
@@ -2485,11 +2506,11 @@ async function saveSample() {
     classificationVersion: state.classificationVersion ?? 'lab-v1',
     correctionVersion:     state.correctionVersion     ?? 'bias-v1.1',
     // ── [v3 신규] ID 연결 + 반응 보정 데이터 ────────────────────
-record_id: state.record_id ?? null,
-finalScore: state.finalScore ?? null,
-adjustedRate: match?.adjustedRate ?? match?.rate,
-reactionReason: match?.reactionReason ?? '',
-directionHint: match?.directionHint ?? ''
+    record_id:      state.record_id       ?? '',
+    finalScore:     state.finalScore      ?? '',
+    adjustedRate:   match?.adjustedRate   ?? '',
+    reactionReason: match?.reactionReason ?? '',
+    directionHint:  match?.directionHint  ?? ''
   };
 
   // 로컬 저장 (시트 전송과 독립)
@@ -2512,8 +2533,8 @@ directionHint: match?.directionHint ?? ''
       console.error(result);
     }
   } catch (err) {
-    console.error('시트 전송 오류:', err);
     showToast('전송 오류 — 로컬에는 저장됨');
+    console.error(err);
   } finally {
     btn.disabled = false;
   }
@@ -2757,9 +2778,9 @@ function renderFeedCard() {
   const feed = FEED_DATA[state.balsecType] || FEED_DATA['06'];
   if (!rgb || !res) return;
 
-  // CLIENT ID — record_id 재사용 (분석 완료 시 1회 생성된 값)
-  const displayId = state.record_id || (new Date().toISOString().slice(0,10).replace(/-/g,'') + ' · ' + String(Math.floor(Math.random()*9000)+1000));
-  document.getElementById('fcClientId').textContent = displayId.replace('-', ' · ');
+  // CLIENT ID — ensureRecordId()로 보장된 state.record_id 직접 사용
+  ensureRecordId();
+  document.getElementById('fcClientId').textContent = state.record_id;
   document.getElementById('fcReportLabel').textContent = 'BALSEC LAB REPORT · TYPE ' + (state.balsecType || '—');
 
   // 배지 · 타입명
