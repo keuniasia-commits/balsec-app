@@ -1551,7 +1551,7 @@ let state = {
   record_id:  null,    // 분석 완료 시점에 1회 생성, 피드카드/뷰어/시트 공유
   finalScore: null     // 상대 100 기준 점수 (선택 제품의 finalScore 캐시)
 };
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbxTBiW8TTiRX3-5BiOX3gPL0116Ulrv1htqU3TR9DVCEUccsGvrjjXnsFbF4mVDlZUDnw/exec";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwOCjWrN7LIv3Hnku6q7NYHU61-AxH3xEj6PgCukglRk88OY3kBdCldkcWbFUvPXGvavw/exec";
 
 // ══════════════════════════════════════
 // [D] Apps Script 수신 컬럼 가이드 (보존형 업데이트 v2.2)
@@ -1908,13 +1908,6 @@ function calcLabReaction(product) {
     if (L >= 68)       { adj += 3;  reason = '밝기가 충분해 누드·브라운 계열이 깔끔하게 표현됩니다'; }
     else               { adj -= 3;  reason = '밝기 대비가 부족해 누드 계열이 다소 칙칙해 보일 수 있습니다'; }
     direction = L >= 68 ? '맑고 밝은 누드 계열이 유리합니다' : '조금 더 선명한 브라운 계열을 권장합니다';
-  }
-  // ── Burgundy 계열 ──
-  else if (cg === 'burgundy') {
-    if (a >= 8)        { adj += 5;  reason = '쿨 축 반응이 좋아 버건디 계열이 깊고 선명하게 표현됩니다'; }
-    else if (a >= 5)   { adj += 2;  reason = '버건디 계열이 자연스럽게 어우러집니다'; }
-    else               { adj -= 3;  reason = '쿨 축 반응이 약해 버건디가 다소 탁하게 표현될 수 있습니다'; }
-    direction = L >= 68 ? '맑은 버건디 계열이 더 선명하게 표현됩니다' : '깊이감 있는 버건디 계열이 안정적입니다';
   }
   // ── 기타 ──
   else {
@@ -2452,9 +2445,6 @@ async function saveSample() {
 
   if (!state.skinRGB) { showToast('피부톤 분석을 먼저 완료해주세요'); btn.disabled = false; return; }
   if (!state.selectedProduct) { showToast('제품을 선택해주세요'); btn.disabled = false; return; }
-
-  // record_id 최종 보장 — 이 시점까지 null이면 여기서 생성
-  ensureRecordId();
 
   const match = calcMatchRate(state.skinRGB, state.selectedProduct, state.intensity);
   const rejectChecks = document.querySelectorAll('#rejectReasons input[type="checkbox"]:checked');
