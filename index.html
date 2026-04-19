@@ -1016,7 +1016,13 @@ select:focus { outline: none; border-color: var(--accent); }
 
   <div class="match-result-box">
     <div class="match-rate-big" id="matchRateBig">--%</div>
+    <!-- [v3] 상대 기준 안내 -->
+    <div id="relativeLabel" style="display:none; font-size:10px; font-weight:800; color:var(--muted); letter-spacing:.06em; margin-top:-6px; margin-bottom:8px;">상대 매칭 기준 점수</div>
     <div class="match-comment" id="matchComment">피부톤 분석 후 매치율을 계산합니다</div>
+    <!-- [v3] 피부 반응 이유 설명 -->
+    <div id="reactionReason" style="display:none; font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:8px; padding:8px 10px; background:var(--bg); border-radius:10px;"></div>
+    <!-- [v3] 컬러 방향 제안 -->
+    <div id="directionHint" style="display:none; font-size:12px; font-weight:800; color:var(--accent); margin-bottom:12px;"></div>
     <div class="match-bars">
       <div class="match-bar-row">
         <div>Color Match</div>
@@ -1533,14 +1539,17 @@ let state = {
   operatorMatch: null,
   lipRGB: null,
   // ── 신규 추가 필드 (보존형 업데이트 v2) ──
-  skinLAB: null,          // { L, a, b } — 평균 RGB 기반 LAB (단 1회 계산)
-  skinLAB_raw: null,      // { L, a, b } — 보정 전 raw RGB 기반 LAB [E]
-  legacyType: null,       // 이전 엔진 판정 결과 보존
-  labType: null,          // LAB 엔진 판정 결과
-  finalType: null,        // 최종 확정 타입 (현재는 labType과 동일)
-  engineVersion: 'v2.2',              // 분석 엔진 버전 (G채널 대칭 보정 반영)
-  classificationVersion: 'lab-v1',   // 판정 알고리즘 버전
-  correctionVersion: 'bias-v1.1'     // 보정 알고리즘 버전 (G 과소 복원 추가)
+  skinLAB: null,
+  skinLAB_raw: null,
+  legacyType: null,
+  labType: null,
+  finalType: null,
+  engineVersion: 'v2.2',
+  classificationVersion: 'lab-v1',
+  correctionVersion: 'bias-v1.1',
+  // ── 신규 추가 필드 (v3 — ID 연결) ──
+  record_id:  null,    // 분석 완료 시점에 1회 생성, 피드카드/뷰어/시트 공유
+  finalScore: null     // 상대 100 기준 점수 (선택 제품의 finalScore 캐시)
 };
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbwOCjWrN7LIv3Hnku6q7NYHU61-AxH3xEj6PgCukglRk88OY3kBdCldkcWbFUvPXGvavw/exec";
 
@@ -1857,6 +1866,75 @@ function classifyBalsecTypeLAB(L, a, b) {
 }
 
 // ══════════════════════════════════════
+// [v3 신규] LAB 피부 반응 보정 엔진
+// calcMatchRate()는 그대로 유지하고,
+// 이 함수로 보정값·이유·방향 제안을 추가 생성
+// ══════════════════════════════════════
+function calcLabReaction(product) {
+  const lab = state.skinLAB;
+  if (!lab) return { adj: 0, reason: '', direction: '' };
+
+  const L = lab.L, a = lab.a, b = lab.b;
+  const cg = product.colorGroup || '';
+  let adj = 0, reason = '', direction = '';
+
+  // ── Coral 계열 ──
+  if (cg === 'coral' || cg === 'orange') {
+    if (b >= 14)       { adj += 6;  reason = 'Warm 축 반응이 좋아 코럴 계열이 자연스럽게 살아납니다'; }
+    else if (b >= 8)   { adj += 2;  reason = 'Warm 축 반응이 있어 코럴이 무난하게 표현됩니다'; }
+    else               { adj -= 5;  reason = 'Warm 축 반응이 약해 코럴이 다소 무겁게 표현될 수 있습니다'; }
+    if (L >= 72)       { adj += 4;  direction = '밝고 맑은 코럴 계열이 더 유리합니다'; }
+    else if (L >= 62)  {            direction = '중간 채도 코럴 계열이 안정적입니다'; }
+    else               { adj -= 3;  direction = '깊이감 있는 코럴 계열이 더 안정적입니다'; }
+  }
+  // ── Pink / Rose 계열 ──
+  else if (cg === 'pink' || cg === 'rose' || cg === 'mlbb') {
+    if (a >= 9)        { adj += 7;  reason = '쿨 축 반응이 좋아 핑크·로즈 계열이 선명하게 표현됩니다'; }
+    else if (a >= 5)   { adj += 2;  reason = '쿨 축 반응이 있어 핑크·로즈가 자연스럽게 표현됩니다'; }
+    else               { adj -= 5;  reason = '쿨 축 반응이 약해 선명도가 떨어질 수 있습니다'; }
+    if (L >= 70)       {            direction = '선명한 핑크 계열에서 더 또렷하게 표현됩니다'; }
+    else               {            direction = '차분한 로즈 계열이 더 안정적으로 표현됩니다'; }
+  }
+  // ── Red 계열 ──
+  else if (cg === 'red') {
+    if (a >= 8 || b >= 12) { adj += 5; reason = '피부 반응 축이 레드 계열에 유리하게 작용합니다'; }
+    else                   { adj += 0; reason = '레드 계열은 대부분 피부에 무난하게 표현됩니다'; }
+    direction = a >= b
+      ? '쿨 레드 계열이 더 선명하게 표현됩니다'
+      : '웜 레드 계열이 더 자연스럽게 표현됩니다';
+  }
+  // ── Brown / Nude 계열 ──
+  else if (cg === 'brown' || cg === 'nude') {
+    if (L >= 68)       { adj += 3;  reason = '밝기가 충분해 누드·브라운 계열이 깔끔하게 표현됩니다'; }
+    else               { adj -= 3;  reason = '밝기 대비가 부족해 누드 계열이 다소 칙칙해 보일 수 있습니다'; }
+    direction = L >= 68 ? '맑고 밝은 누드 계열이 유리합니다' : '조금 더 선명한 브라운 계열을 권장합니다';
+  }
+  // ── 기타 ──
+  else {
+    adj = 0;
+    reason = '피부 반응 보정이 적용되었습니다';
+    direction = '';
+  }
+
+  return {
+    adj:       Math.max(-10, Math.min(10, Math.round(adj))),
+    reason:    reason,
+    direction: direction
+  };
+}
+
+// ── 상대 점수 정규화 (제품 목록 기준 1위=100) ──
+function normalizeToRelative(scores) {
+  // scores: [{ id, rate }, ...]
+  const max = Math.max(...scores.map(s => s.rate));
+  if (max === 0) return scores.map(s => ({ ...s, relRate: 0 }));
+  return scores.map(s => ({
+    ...s,
+    relRate: Math.round((s.rate / max) * 100)
+  }));
+}
+
+// ══════════════════════════════════════
 // 매치율 계산 v2.0
 // 3축 구조:
 //   Color Match     45% — CIE ΔE 기반
@@ -1912,11 +1990,19 @@ function calcMatchRate(skinRGB, product, intensity) {
     intensityMod
   );
 
+  // ── [v3] LAB 피부 반응 보정 추가 ──
+  const reaction = calcLabReaction(product);
+  const adjustedRate = Math.min(97, Math.max(45, finalRate + reaction.adj));
+
   return {
-    rate: Math.min(97, Math.max(45, finalRate)),
-    colorScore: Math.round(colorScore),   // Color Match
-    kpScore: Math.round(kpScore),         // Korean Preference
-    styleFitScore: Math.round(styleFitScore) // Style Fit
+    rate:          Math.min(97, Math.max(45, finalRate)), // 기존 rate 유지
+    adjustedRate:  adjustedRate,                          // 보정 적용 점수
+    reactionAdj:   reaction.adj,                          // 보정값 (±)
+    reactionReason: reaction.reason,                      // 이유 설명
+    directionHint:  reaction.direction,                   // 방향 제안
+    colorScore:    Math.round(colorScore),
+    kpScore:       Math.round(kpScore),
+    styleFitScore: Math.round(styleFitScore)
   };
 }
 
@@ -2100,6 +2186,12 @@ async function startAnalysis() {
   });
 
   await new Promise(r => setTimeout(r, 300));
+
+  // ── record_id: 분석 완료 시점에 1회 생성 (피드카드·뷰어·시트 공유) ──
+  const _dateStr = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const _seq     = String(Math.floor(Math.random() * 9000) + 1000);
+  state.record_id = _dateStr + '-' + _seq;
+
   renderToneResult(avg, result);
   goTo('s4');
 }
@@ -2141,8 +2233,22 @@ function renderToneResult(rgb, result) {
 // ══════════════════════════════════════
 function renderProducts() {
   const grid = document.getElementById('productGrid');
+
+  // [v3] 상대 점수 계산: 전체 제품 매치율 먼저 구한 뒤 1위=100 정규화
+  let rawScores = [];
+  if (state.skinRGB) {
+    rawScores = PRODUCTS.map(p => ({
+      id:   p.id,
+      rate: calcMatchRate(state.skinRGB, p, state.intensity).adjustedRate
+    }));
+    rawScores = normalizeToRelative(rawScores);
+  }
+  const relMap = Object.fromEntries(rawScores.map(s => [s.id, s.relRate]));
+
   grid.innerHTML = PRODUCTS.map(p => {
-    const preview = state.skinRGB ? calcMatchRate(state.skinRGB, p, state.intensity) : null;
+    const preview  = state.skinRGB ? calcMatchRate(state.skinRGB, p, state.intensity) : null;
+    const relRate  = relMap[p.id] ?? null;
+    const isTop    = relRate === 100;
     return `
       <div class="product-card" id="pc_${p.id}" onclick="selectProduct('${p.id}')">
         <div class="product-swatch" style="background:${p.hex};"></div>
@@ -2156,7 +2262,11 @@ function renderProducts() {
             <div style="font-size:11px; color:var(--muted);">★ ${p.review.score} · ${p.review.count}건</div>
           </div>
         </div>
-        ${preview ? `<div class="product-match-preview">${preview.rate}%</div>` : ''}
+        ${relRate !== null ? `
+          <div style="text-align:right;">
+            <div class="product-match-preview" style="${isTop ? 'color:var(--accent);' : ''}">${relRate}</div>
+            <div style="font-size:9px; color:var(--muted); font-weight:700; margin-top:2px;">상대기준</div>
+          </div>` : ''}
       </div>
     `;
   }).join('');
@@ -2191,6 +2301,17 @@ function goToSim() {
     stage.classList.add('photo-mode');
   }
 
+  // [v3 수정1] 전체 제품 adjustedRate 계산 → 1위=100 정규화 → 선택 제품 finalScore 저장
+  if (state.skinRGB) {
+    const allScores = PRODUCTS.map(prod => ({
+      id:          prod.id,
+      rate:        calcMatchRate(state.skinRGB, prod, state.intensity).adjustedRate
+    }));
+    const normalized = normalizeToRelative(allScores);
+    const myScore    = normalized.find(s => s.id === p.id);
+    state.finalScore = myScore ? myScore.relRate : null;
+  }
+
   updateIntensity(state.intensity);
   goTo('s6');
 }
@@ -2213,22 +2334,58 @@ function updateIntensity(val) {
 }
 
 function renderMatchResult(match) {
-  document.getElementById('matchRateBig').textContent = match.rate + '%';
+  // [수정1] finalScore(1위=100 상대 기준) 우선 사용, 없으면 adjustedRate 폴백
+  const displayScore = state.finalScore ?? match.adjustedRate ?? match.rate;
+  document.getElementById('matchRateBig').textContent = displayScore + '%';
 
-  let comment;
-  if (match.rate >= 85) comment = '피부톤과 잘 어울리는 컬러예요. 단, 개인 취향에 따라 다르게 느껴질 수 있어요.';
-  else if (match.rate >= 75) comment = '무난하게 어울려요. 발림 강도를 조절해 나만의 느낌을 찾아보세요.';
-  else if (match.rate >= 65) comment = '착용감은 있지만 다른 컬러도 함께 비교해보는 것을 권장해요.';
-  else comment = '이 컬러는 피부톤·선호도 기준과 조금 다른 방향이에요. 다른 제품을 탐색해보세요.';
-  document.getElementById('matchComment').textContent = comment;
+  // [수정1] 상대 기준 안내 항상 표시
+  const relLabelEl = document.getElementById('relativeLabel');
+  if (relLabelEl) relLabelEl.style.display = 'block';
+
+  // [수정2] reactionReason을 메인 설명으로 사용
+  // reactionReason이 있으면 메인, 없으면 기존 코멘트 폴백
+  const mainComment = match.reactionReason || (() => {
+    if (displayScore >= 85) return '피부톤과 잘 어울리는 컬러예요.';
+    if (displayScore >= 75) return '무난하게 어울려요.';
+    if (displayScore >= 65) return '착용감은 있지만 다른 컬러도 비교해보세요.';
+    return '다른 제품을 탐색해보는 것을 권장해요.';
+  })();
+  document.getElementById('matchComment').textContent = mainComment;
+
+  // [수정3] 점수-설명 연결: reactionAdj 방향에 따라 설명 앞에 점수 변화 표시
+  const reasonEl = document.getElementById('reactionReason');
+  if (reasonEl) {
+    const adj = match.reactionAdj ?? 0;
+    let adjLabel = '';
+    if (adj > 0)      adjLabel = `▲ 반응 상승 · `;
+    else if (adj < 0) adjLabel = `▼ 반응 하락 · `;
+
+    // 점수 구간에 따른 보조 설명 연결
+    let scoreContext = '';
+    if (displayScore === 100)      scoreContext = '이 제품이 현재 가장 잘 맞습니다.';
+    else if (displayScore >= 85)   scoreContext = '피부 반응이 좋은 컬러 계열입니다.';
+    else if (displayScore >= 70)   scoreContext = '무난한 발색이 예상됩니다.';
+    else                           scoreContext = '다른 컬러 계열과 비교해보세요.';
+
+    const fullText = adjLabel + scoreContext;
+    reasonEl.textContent = fullText;
+    reasonEl.style.display = fullText ? 'block' : 'none';
+  }
+
+  // directionHint 유지
+  const dirEl = document.getElementById('directionHint');
+  if (dirEl) {
+    dirEl.textContent = match.directionHint ? '💡 ' + match.directionHint : '';
+    dirEl.style.display = match.directionHint ? 'block' : 'none';
+  }
 
   setTimeout(() => {
-    document.getElementById('barTemp').style.width = match.colorScore + '%';
-    document.getElementById('barDelta').style.width = match.kpScore + '%';
-    document.getElementById('barStable').style.width = match.styleFitScore + '%';
-    document.getElementById('barTempVal').textContent = match.colorScore + '%';
-    document.getElementById('barDeltaVal').textContent = match.kpScore + '%';
-    document.getElementById('barStableVal').textContent = match.styleFitScore + '%';
+    document.getElementById('barTemp').style.width    = match.colorScore    + '%';
+    document.getElementById('barDelta').style.width   = match.kpScore       + '%';
+    document.getElementById('barStable').style.width  = match.styleFitScore + '%';
+    document.getElementById('barTempVal').textContent = match.colorScore    + '%';
+    document.getElementById('barDeltaVal').textContent= match.kpScore       + '%';
+    document.getElementById('barStableVal').textContent= match.styleFitScore+ '%';
   }, 100);
 }
 
@@ -2312,18 +2469,24 @@ async function saveSample() {
     productRGB:   state.selectedProduct.rgb,
     productTemp:  state.selectedProduct.temp,
     // ── [신규 12컬럼] 입술RGB 뒤에 순서대로 추가 ────────────────
-    labL:  state.skinLAB?.L ?? null,                  // LAB_L
-    labA:  state.skinLAB?.a ?? null,                  // LAB_a
-    labB:  state.skinLAB?.b ?? null,                  // LAB_b
-    rawLabL: state.skinLAB_raw?.L ?? null,             // RAW_LAB_L
-    rawLabA: state.skinLAB_raw?.a ?? null,             // RAW_LAB_a
-    rawLabB: state.skinLAB_raw?.b ?? null,             // RAW_LAB_b
-    legacyType:            state.legacyType            ?? null, // LegacyType
-    labType:               state.labType               ?? null, // LAB_Type
-    finalType:             state.finalType             ?? null, // FinalType
-    engineVersion:         state.engineVersion         ?? 'v2.2', // EngineVersion
-    classificationVersion: state.classificationVersion ?? 'lab-v1', // ClassificationVersion
-    correctionVersion:     state.correctionVersion     ?? 'bias-v1.1' // CorrectionVersion
+    labL:  state.skinLAB?.L ?? null,
+    labA:  state.skinLAB?.a ?? null,
+    labB:  state.skinLAB?.b ?? null,
+    rawLabL: state.skinLAB_raw?.L ?? null,
+    rawLabA: state.skinLAB_raw?.a ?? null,
+    rawLabB: state.skinLAB_raw?.b ?? null,
+    legacyType:            state.legacyType            ?? null,
+    labType:               state.labType               ?? null,
+    finalType:             state.finalType             ?? null,
+    engineVersion:         state.engineVersion         ?? 'v2.2',
+    classificationVersion: state.classificationVersion ?? 'lab-v1',
+    correctionVersion:     state.correctionVersion     ?? 'bias-v1.1',
+    // ── [v3 신규] ID 연결 + 반응 보정 데이터 ────────────────────
+    record_id:      state.record_id    ?? null,
+    finalScore:     state.finalScore   ?? null,        // 상대 100 기준 점수
+    adjustedRate:   match?.adjustedRate ?? match?.rate,
+    reactionReason: match?.reactionReason ?? '',
+    directionHint:  match?.directionHint  ?? ''
   };
 
   // 로컬 저장 (시트 전송과 독립)
@@ -2425,6 +2588,7 @@ function renderDataView() {
 
     return `
     <div style="background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:14px;">
+      ${s.record_id ? `<div style="font-size:10px; font-weight:900; color:var(--muted); letter-spacing:.08em; margin-bottom:6px;">ID: ${s.record_id}</div>` : ''}
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
         <div style="font-size:13px; font-weight:900;">TYPE ${s.balsecType} · ${s.productBrand} ${s.productName}</div>
         <div style="font-size:14px; font-weight:900; color:var(--accent);">${s.matchRate}%</div>
@@ -2470,7 +2634,9 @@ function restartTest() {
     finalType: null,
     engineVersion: 'v2.2',
     classificationVersion: 'lab-v1',
-    correctionVersion: 'bias-v1.1'
+    correctionVersion: 'bias-v1.1',
+    record_id:  null,
+    finalScore: null
   };
   ['prev1','prev2','prev3'].forEach(id => { document.getElementById(id).style.display='none'; });
   ['prevImg1','prevImg2','prevImg3'].forEach(id => { document.getElementById(id).src=''; });
@@ -2588,10 +2754,9 @@ function renderFeedCard() {
   const feed = FEED_DATA[state.balsecType] || FEED_DATA['06'];
   if (!rgb || !res) return;
 
-  // CLIENT ID
-  const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,'');
-  const seq = String(Math.floor(Math.random() * 9000) + 1000);
-  document.getElementById('fcClientId').textContent = dateStr + ' · ' + seq;
+  // CLIENT ID — record_id 재사용 (분석 완료 시 1회 생성된 값)
+  const displayId = state.record_id || (new Date().toISOString().slice(0,10).replace(/-/g,'') + ' · ' + String(Math.floor(Math.random()*9000)+1000));
+  document.getElementById('fcClientId').textContent = displayId.replace('-', ' · ');
   document.getElementById('fcReportLabel').textContent = 'BALSEC LAB REPORT · TYPE ' + (state.balsecType || '—');
 
   // 배지 · 타입명
