@@ -1575,21 +1575,37 @@ const SHEET_URL = "https://script.google.com/macros/s/AKfycbxTBiW8TTiRX3-5BiOX3g
 // 이미지 업로드 처리
 // ══════════════════════════════════════
 function setupUpload(inputId, previewWrapId, previewImgId, stateKey) {
-  document.getElementById(inputId).addEventListener('change', function(e) {
-    const file = e.target.files[0];
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  input.addEventListener('change', function(e) {
+    const file = e.target.files && e.target.files[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = ev => {
       state[stateKey] = ev.target.result;
+
       const wrap = document.getElementById(previewWrapId);
       const img = document.getElementById(previewImgId);
-      img.src = ev.target.result;
-      wrap.style.display = 'block';
+
+      if (img) img.src = ev.target.result;
+      if (wrap) wrap.style.display = 'block';
+
       checkAnalyzeReady();
+      input.value = '';
     };
+
     reader.readAsDataURL(file);
   });
 }
+function checkAnalyzeReady() {
+  const btn = document.getElementById('analyzeBtn');
+  if (!btn) return;
+
+  btn.disabled = !(state.hand1 && state.hand2);
+}
+      // 모바일에서 같은 파일 다시 선택 가능하게 초기화
 setupUpload('hand1Camera', 'prev1', 'prevImg1', 'hand1');
 setupUpload('hand1Upload', 'prev1', 'prevImg1', 'hand1');
 setupUpload('hand2Camera', 'prev2', 'prevImg2', 'hand2');
@@ -1597,12 +1613,6 @@ setupUpload('hand2Upload', 'prev2', 'prevImg2', 'hand2');
 setupUpload('faceCamera',  'prev3', 'prevImg3', 'face');
 setupUpload('faceUpload',  'prev3', 'prevImg3', 'face');
 
-function checkAnalyzeReady() {
-  const btn = document.getElementById('analyzeBtn');
-  if (state.hand1 && state.hand2) {
-    btn.disabled = false;
-  }
-}
 
 // ══════════════════════════════════════
 // BALSEC 촬영 보정 로직 v1
