@@ -1,0 +1,2855 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BALSEC 발색 연구소</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --bg: #f7f3ef;
+  --white: #ffffff;
+  --text: #1a1612;
+  --muted: #7a6e67;
+  --line: #e5ddd6;
+  --accent: #c24e6b;
+  --accent-soft: #f5e0e7;
+  --warm: #e8895a;
+  --cool: #6f95d7;
+  --neutral: #9e8fbd;
+  --shadow: 0 8px 24px rgba(40,20,10,.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+.app {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.screen { display: none; padding: 24px 20px 40px; min-height: 100vh; }
+.screen.active { display: block; }
+
+/* ── 공통 ── */
+.logo-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.logo {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  color: var(--muted);
+}
+.back-btn {
+  border: none;
+  background: var(--bg);
+  border-radius: 10px;
+  width: 36px; height: 36px;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+}
+.page-title {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+.page-sub {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.btn {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 15px 16px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: .15s ease;
+}
+.btn-primary {
+  background: var(--text);
+  color: var(--white);
+}
+.btn-primary:active { opacity: .88; }
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+.btn-accent {
+  background: var(--accent);
+  color: var(--white);
+}
+.btn-row { display: flex; gap: 10px; margin-top: 10px; }
+.divider { height: 1px; background: var(--line); margin: 20px 0; }
+
+/* ── SCREEN 1 인트로 ── */
+.intro-hero {
+  background: linear-gradient(160deg, #fdf0e8, #fce8ef);
+  border-radius: 22px;
+  padding: 32px 24px;
+  margin: 20px 0 28px;
+  text-align: center;
+}
+.intro-icon {
+  font-size: 48px;
+  margin-bottom: 14px;
+}
+.intro-hero-title {
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+.intro-hero-sub {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.step-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 14px;
+}
+.step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 32px;
+}
+.step-text { font-size: 14px; font-weight: 700; line-height: 1.4; }
+.step-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── SCREEN 2 사진 업로드 ── */
+.upload-section { margin-bottom: 20px; }
+.upload-label {
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.upload-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.upload-badge.optional {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+.upload-box {
+  border: 1.5px dashed var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: .15s ease;
+}
+.upload-box:hover { border-color: var(--accent); }
+.upload-box input { display: none; }
+.upload-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.upload-trigger-icon {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.upload-helper {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.preview-wrap {
+  margin-top: 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: none;
+}
+.preview-wrap img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── SCREEN 3 분석중 ── */
+.analyzing-wrap {
+  text-align: center;
+  padding: 40px 0;
+}
+.analyzing-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+.analyzing-title {
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+.analyzing-sub {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.step-progress {
+  margin: 28px 0;
+  display: grid;
+  gap: 10px;
+}
+.prog-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--muted);
+  opacity: .4;
+  transition: .3s ease;
+}
+.prog-item.done { opacity: 1; color: var(--text); }
+.prog-dot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--line);
+  flex: 0 0 20px;
+  transition: .3s ease;
+}
+.prog-item.done .prog-dot { background: var(--accent); }
+
+/* ── SCREEN 4 피부톤 결과 ── */
+.tone-result-card {
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.tone-result-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: .08;
+}
+.tone-warm { background: linear-gradient(135deg, #fff5ee, #fff0e8); border: 1px solid #f0d5c0; }
+.tone-cool { background: linear-gradient(135deg, #eef2ff, #e8eeff); border: 1px solid #c0ceef; }
+.tone-neutral { background: linear-gradient(135deg, #f2eeff, #ede8ff); border: 1px solid #ccc0ef; }
+.tone-badge-large {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.badge-warm { background: #f2dbc5; color: #8b561f; }
+.badge-cool { background: #c8d8f7; color: #2a4a8b; }
+.badge-neutral { background: #d8cfee; color: #4a3a7b; }
+.tone-headline { font-size: 18px; font-weight: 900; margin-bottom: 8px; }
+.tone-copy { font-size: 14px; color: #5a5248; line-height: 1.65; margin-bottom: 16px; }
+.score-bars { display: grid; gap: 10px; }
+.score-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 44px;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.score-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #ede8e3;
+  overflow: hidden;
+}
+.score-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+.rgb-display {
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.rgb-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: .06em;
+  margin-bottom: 10px;
+}
+.rgb-chips {
+  display: flex;
+  gap: 8px;
+}
+.rgb-chip {
+  flex: 1;
+  border-radius: 10px;
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+.rgb-chip-r { background: #fde8e8; color: #c03030; }
+.rgb-chip-g { background: #e8f5e8; color: #2a7a2a; }
+.rgb-chip-b { background: #e8eef8; color: #2a3a8a; }
+.rgb-val { font-size: 16px; font-weight: 900; display: block; margin-top: 2px; }
+.balsec-type-card {
+  background: var(--text);
+  color: var(--white);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.type-num {
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1;
+  opacity: .3;
+}
+.type-info-label { font-size: 11px; opacity: .6; margin-bottom: 4px; }
+.type-info-name { font-size: 18px; font-weight: 900; }
+.type-info-sub { font-size: 12px; opacity: .7; margin-top: 3px; }
+
+/* ── BALSEC 발색 구조 출력 카드 ── */
+.balsec-output-card {
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+}
+.balsec-output-card.warm  { background: linear-gradient(135deg, #fff5ee, #fff0e8); border-color: #f0d5c0; }
+.balsec-output-card.cool  { background: linear-gradient(135deg, #eef2ff, #e8eeff); border-color: #c0ceef; }
+.balsec-output-card.neutral { background: linear-gradient(135deg, #f2eeff, #ede8ff); border-color: #ccc0ef; }
+
+.balsec-type-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+.balsec-type-label.warm    { background: #f2dbc5; color: #8b561f; }
+.balsec-type-label.cool    { background: #c8d8f7; color: #2a4a8b; }
+.balsec-type-label.neutral { background: #d8cfee; color: #4a3a7b; }
+
+.balsec-engine-name {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 2px;
+}
+.balsec-engine-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.balsec-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.balsec-metric {
+  background: rgba(255,255,255,.65);
+  border-radius: 12px;
+  padding: 10px 8px;
+  text-align: center;
+}
+.balsec-metric-label {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .07em;
+  color: var(--muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.balsec-metric-value {
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+.balsec-analysis {
+  background: rgba(255,255,255,.5);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.balsec-analysis-label {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.balsec-analysis-flow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text);
+}
+.balsec-flow-arrow {
+  color: var(--muted);
+  font-size: 10px;
+  flex: 0 0 auto;
+}
+.balsec-interpretation {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4a4240;
+  margin-bottom: 14px;
+}
+.balsec-best-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.balsec-color-chip {
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(255,255,255,.7);
+  border-radius: 999px;
+  padding: 4px 10px;
+  color: var(--text);
+}
+
+/* ── SCREEN 5 제품 선택 ── */
+.product-grid {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.product-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  padding: 14px;
+  cursor: pointer;
+  transition: .15s ease;
+}
+.product-card:active { transform: scale(.98); }
+.product-card.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.product-swatch {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  flex: 0 0 48px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.12);
+}
+.product-info { flex: 1; min-width: 0; }
+.product-brand {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.product-name {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.3;
+  margin-bottom: 3px;
+}
+.product-shade { font-size: 12px; color: var(--muted); }
+.product-match-preview {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--accent);
+  flex: 0 0 auto;
+}
+
+/* ── SCREEN 6 시뮬레이션 ── */
+.sim-product-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.sim-swatch-big {
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  flex: 0 0 52px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.15);
+}
+.sim-stage {
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(180deg, #f5ede6, #efe3da);
+  margin-bottom: 16px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sim-stage.photo-mode {
+  background-size: cover;
+  background-position: center;
+}
+.hand-shape {
+  position: absolute;
+  width: 72%;
+  height: 52px;
+  left: 14%;
+  top: 74px;
+  border-radius: 30px;
+  background: rgba(221,192,170,.5);
+}
+.color-patch {
+  position: absolute;
+  width: 42%;
+  height: 26px;
+  left: 29%;
+  top: 87px;
+  border-radius: 20px;
+  transition: all .2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,.14);
+}
+/* 캔버스 기반 발색 오버레이 */
+.sim-canvas-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  pointer-events: none;
+}
+.sim-lip-canvas {
+  position: absolute;
+  width: 42%;
+  height: 26px;
+  left: 29%;
+  top: 87px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.18);
+  pointer-events: none;
+}
+.sim-no-photo {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.intensity-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+input[type="range"] {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--text);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.match-result-box {
+  background: linear-gradient(135deg, #fff8fa, #fff);
+  border: 1.5px solid #f0d0da;
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.match-rate-big {
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.match-comment {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.match-bars { display: grid; gap: 8px; }
+.match-bar-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 36px;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.match-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+.match-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width .6s ease;
+}
+
+/* ── SCREEN 7 피드백 ── */
+.feedback-section { margin-bottom: 20px; }
+.feedback-title {
+  font-size: 16px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.rating-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.rating-btn {
+  flex: 1;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--white);
+  transition: .15s ease;
+}
+.rating-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.rating-emoji { font-size: 22px; display: block; margin-bottom: 4px; }
+.rating-label { font-size: 11px; font-weight: 800; color: var(--muted); }
+.rating-btn.active .rating-label { color: var(--accent); }
+.operator-card {
+  background: #fffbf0;
+  border: 1.5px solid #f0e0a0;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.operator-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #7a6020;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.operator-match-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.op-btn {
+  flex: 1;
+  border: 1.5px solid #e0d090;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #fff;
+  transition: .15s ease;
+}
+.op-btn.active-y { background: #e8f5e8; border-color: #60a060; color: #2a6a2a; }
+.op-btn.active-n { background: #fde8e8; border-color: #c06060; color: #7a2020; }
+textarea {
+  width: 100%;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--white);
+  resize: none;
+  color: var(--text);
+}
+textarea:focus { outline: none; border-color: var(--accent); }
+.additional-selects { display: grid; gap: 10px; margin-bottom: 16px; }
+select {
+  width: 100%;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--white);
+  color: var(--text);
+  appearance: none;
+}
+select:focus { outline: none; border-color: var(--accent); }
+
+/* ── SCREEN 8 저장 완료 ── */
+.save-complete-wrap {
+  text-align: center;
+  padding: 32px 0;
+}
+.save-complete-icon { font-size: 56px; margin-bottom: 16px; }
+.save-complete-title { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+.save-complete-sub { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
+.save-summary-card {
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: left;
+  margin-bottom: 20px;
+}
+.save-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.save-summary-row:last-child { border-bottom: none; }
+.save-summary-key { color: var(--muted); font-weight: 700; }
+.save-summary-val { font-weight: 900; }
+.sample-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 900;
+  margin-bottom: 20px;
+}
+
+/* ── 토스트 ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text);
+  color: var(--white);
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0;
+  transition: .3s ease;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── SCREEN 9 피드 카드 ── */
+.fc-canvas {
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1 / 1;
+  background: #ffffff;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(40,20,10,.13);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.fc-photo-side {
+  position: relative;
+  width: 50%; flex: 0 0 50%;
+  overflow: hidden;
+  background: #ddd6cf;
+}
+.fc-photo-side img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  display: block;
+}
+.fc-photo-side.fc-no-image img { display: none; }
+.fc-photo-side.fc-no-image .fc-photo-fallback { display: flex; }
+.fc-photo-fallback {
+  display: none;
+  width: 100%; height: 100%;
+  align-items: center; justify-content: center;
+  font: 700 11px/1.5 Arial, sans-serif;
+  letter-spacing: .1em;
+  color: rgba(45,30,20,.5);
+  text-align: center;
+  background: linear-gradient(180deg,#e8dfd6,#d9cec3);
+}
+.fc-type-badge {
+  position: absolute; top: 8px; left: 8px;
+  background: rgba(45,30,20,.42); color: #fff;
+  border-radius: 999px; padding: 4px 9px;
+  font: 700 7px/1 Arial, sans-serif; letter-spacing: .14em;
+  z-index: 2;
+}
+.fc-photo-overlay {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 16px 10px 12px;
+  background: linear-gradient(to top, rgba(45,30,20,.72), rgba(45,30,20,0));
+  z-index: 2;
+}
+.fc-client-label { font: 700 6px/1 Arial, sans-serif; letter-spacing: .18em; color: rgba(255,255,255,.68); margin-bottom: 5px; }
+.fc-client-id    { font: 700 10px/1 Arial, sans-serif; letter-spacing: .08em; color: #fff; }
+.fc-divider-v    { width: 1px; flex: 0 0 1px; background: #e8e0d8; }
+.fc-info-side {
+  width: 50%; flex: 0 0 50%;
+  padding: 14px 13px;
+  display: flex; flex-direction: column;
+  background: #fff;
+  min-width: 0;
+}
+.fc-report-label  { font: 700 6.5px/1.2 Arial, sans-serif; letter-spacing: .16em; color: #b8a898; margin-bottom: 4px; }
+.fc-type-name     { font: 700 13px/1.2 Georgia, serif; color: #2d1e14; margin-bottom: 10px; }
+.fc-hr            { height: 1px; background: #e8e0d8; margin-bottom: 8px; }
+.fc-rgb-row       { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.fc-section-label { font: 700 6.5px/1.2 Arial, sans-serif; letter-spacing: .1em; color: #b8a898; }
+.fc-rgb-value     { font: 700 8.5px/1.2 Arial, sans-serif; color: #2d1e14; letter-spacing: .06em; }
+.fc-axis-group    { display: grid; gap: 6px; margin-bottom: 8px; }
+.fc-axis-header   { display: flex; justify-content: space-between; margin-bottom: 3px; }
+.fc-axis-key      { font: 700 6.5px/1.2 Arial, sans-serif; color: #b8a898; letter-spacing: .06em; }
+.fc-axis-val      { font: 700 6.5px/1.2 Arial, sans-serif; color: #2d1e14; }
+.fc-bar-track     { height: 3px; background: #f0ece8; border-radius: 999px; overflow: hidden; margin-bottom: 3px; }
+.fc-bar-fill      { height: 100%; border-radius: 999px; transition: width .4s ease; }
+.fc-bar-dark      { background: #2d1e14; }
+.fc-bar-warm      { background: #c8935a; }
+.fc-bar-muted     { background: #8a7065; }
+.fc-axis-desc     { font: 400 6px/1.4 Arial, sans-serif; color: #b8a898; }
+.fc-conclusion-box { background: #f7f4f0; border-radius: 7px; padding: 7px 8px; margin-bottom: 8px; }
+.fc-conclusion-title { font: 700 8px/1.35 Arial, sans-serif; color: #2d1e14; margin: 3px 0 3px; }
+.fc-conclusion-desc  { font: 400 6.5px/1.55 Arial, sans-serif; color: #7a6a5a; }
+.fc-color-section { margin-bottom: 8px; }
+.fc-color-list    { display: grid; gap: 5px; margin-top: 5px; }
+.fc-color-item    { display: flex; align-items: flex-start; gap: 6px; }
+.fc-color-chip    { width: 13px; height: 13px; border-radius: 50%; flex: 0 0 13px; margin-top: 1px; }
+.fc-color-name    { font: 700 7px/1.2 Arial, sans-serif; color: #2d1e14; margin-bottom: 1px; letter-spacing: .04em; }
+.fc-color-reason  { font: 400 6px/1.4 Arial, sans-serif; color: #b8a898; }
+.fc-branding      { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
+.fc-brand-name    { font: 700 8.5px/1.2 Arial, sans-serif; letter-spacing: .08em; color: #2d1e14; }
+.fc-brand-sub     { font: 400 6px/1.45 Arial, sans-serif; color: #b8a898; letter-spacing: .06em; }
+/* ── 히든 캔버스 ── */
+#analyzeCanvas { display: none; }
+</style>
+</head>
+<body>
+
+<canvas id="analyzeCanvas"></canvas>
+<div class="toast" id="toast"></div>
+
+<div class="app">
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 — 인트로
+══════════════════════════════════════ -->
+<section class="screen active" id="s1">
+  <div class="logo-bar">
+    <div class="logo">BALSEC · 발색 연구소</div>
+  </div>
+
+  <!-- 히어로 카드 (로고 박스) -->
+  <div style="background:var(--bg); border:1px solid var(--line); border-radius:22px; padding:32px 20px 28px; text-align:center; margin-bottom:14px;">
+    <div style="font-size:38px; font-weight:900; letter-spacing:.18em; color:var(--text); margin-bottom:12px;">BALSEC</div>
+    <div style="font-size:12px; font-weight:700; letter-spacing:.06em; color:var(--muted); margin-bottom:4px;">perfect lipstick color in 10 seconds</div>
+    <div style="font-size:11px; color:var(--muted); letter-spacing:.04em;">AI 데이터분석 발색연구소</div>
+  </div>
+
+  <!-- SCAN CHECK SAVE 독립 박스 -->
+  <div style="background:var(--bg); border:1px solid var(--line); border-radius:22px; padding:22px 20px; text-align:center; margin-bottom:20px;">
+    <div style="font-size:15px; font-weight:900; letter-spacing:.14em; color:var(--text); margin-bottom:6px;">SCAN · CHECK · SAVE</div>
+    <div style="font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--muted); margin-bottom:4px;">JUST 3 STEPS</div>
+    <div style="font-size:11px; letter-spacing:.06em; color:var(--muted);">FIND YOUR LIP COLOR</div>
+  </div>
+
+  <!-- SNS -->
+  <div style="text-align:center; margin-bottom:20px;">
+    <div style="font-size:11px; color:var(--muted); letter-spacing:.06em;">@balsec_lab</div>
+    <div style="font-size:10px; color:var(--muted); margin-top:3px;">follow & share to your result, unlock your detailed lip analysis</div>
+  </div>
+
+  <button class="btn btn-primary" onclick="goTo('s2')">테스트 시작하기</button>
+</section>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2 — 사진 업로드
+══ -->
+<section class="screen" id="s2">
+  <div class="logo-bar">
+    <div class="logo">BALSEC · 발색 연구소</div>
+    <button class="back-btn" onclick="goTo('s1')">←</button>
+  </div>
+  <div class="page-title" style="font-size:22px; letter-spacing:.08em; margin-bottom:32px;">JUST 10 SECONDS</div>
+
+  <!-- 피부진단 ONE -->
+  <label style="display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:var(--bg); border:1px solid var(--line); border-radius:18px; margin-bottom:10px; cursor:pointer;" for="hand1">
+    <div style="font-size:14px; font-weight:900; color:var(--text); letter-spacing:.04em;">피부진단 · ONE</div>
+    <div style="font-size:20px;">📷</div>
+    <input type="file" id="hand1" accept="image/*" capture="environment" style="display:none;" />
+  </label>
+  <div class="preview-wrap" id="prev1"><img id="prevImg1" /></div>
+
+  <!-- 피부진단 TWO -->
+  <label style="display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:var(--bg); border:1px solid var(--line); border-radius:18px; margin-bottom:10px; cursor:pointer;" for="hand2">
+    <div style="font-size:14px; font-weight:900; color:var(--text); letter-spacing:.04em;">피부진단 · TWO</div>
+    <div style="font-size:20px;">📷</div>
+    <input type="file" id="hand2" accept="image/*" capture="environment" style="display:none;" />
+  </label>
+  <div class="preview-wrap" id="prev2"><img id="prevImg2" /></div>
+
+  <!-- FACE -->
+  <label style="display:flex; align-items:center; justify-content:space-between; padding:16px 18px; background:var(--bg); border:1px dashed var(--line); border-radius:18px; margin-bottom:32px; cursor:pointer;" for="face">
+    <div>
+      <div style="font-size:14px; font-weight:900; color:var(--text); letter-spacing:.04em;">FACE</div>
+      <div style="font-size:10px; color:var(--muted); margin-top:2px;">optional</div>
+    </div>
+    <div style="font-size:20px;">🤳</div>
+    <input type="file" id="face" accept="image/*" capture="user" style="display:none;" />
+  </label>
+  <div class="preview-wrap" id="prev3"><img id="prevImg3" /></div>
+
+  <button class="btn btn-primary" id="analyzeBtn" disabled onclick="startAnalysis()">분석 시작</button>
+</section>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3 — 분석중
+══════════════════════════════════════ -->
+<section class="screen" id="s3">
+  <div class="logo-bar">
+    <div class="logo">BALSEC · 발색 연구소</div>
+    <button class="back-btn" id="s3BackBtn" onclick="cancelAnalysis()">←</button>
+  </div>
+  <div class="analyzing-wrap">
+    <div class="analyzing-icon">🔬</div>
+    <div class="analyzing-title">분석 중입니다</div>
+    <div class="analyzing-sub">RGB 픽셀을 기반으로<br>피부톤을 측정하고 있어요</div>
+  </div>
+  <div class="step-progress">
+    <div class="prog-item" id="p1"><div class="prog-dot"></div><span>이미지 픽셀 추출 중</span></div>
+    <div class="prog-item" id="p2"><div class="prog-dot"></div><span>밝기 정규화 보정 중</span></div>
+    <div class="prog-item" id="p3"><div class="prog-dot"></div><span>색 편향 보정 중</span></div>
+    <div class="prog-item" id="p4"><div class="prog-dot"></div><span>언더톤 · BALSEC TYPE 판정 중</span></div>
+    <div class="prog-item" id="p5"><div class="prog-dot"></div><span>분석 완료</span></div>
+  </div>
+  <!-- 품질 피드백 영역 -->
+  <div id="qualityFeedback" style="display:none; margin-top:16px; background:var(--bg); border-radius:14px; padding:14px; font-size:13px; color:var(--muted); line-height:1.7;"></div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SCREEN 4 — 피부톤 결과
+══════════════════════════════════════ -->
+<section class="screen" id="s4">
+  <div class="logo-bar">
+    <div class="logo">BALSEC · 발색 연구소</div>
+    <button class="back-btn" onclick="goTo('s2')">←</button>
+  </div>
+  <div class="page-title">피부 발색<br>반응 분석</div>
+  <p class="page-sub">손등 사진 기반 LAB 색공간 측정 결과입니다</p>
+
+  <!-- TYPE 뱃지 카드 -->
+  <div class="balsec-type-card">
+    <div class="type-num" id="typeNum">01</div>
+    <div>
+      <div class="type-info-label">BALSEC TYPE</div>
+      <div class="type-info-name" id="typeName">Warm Reflect</div>
+      <div class="type-info-sub" id="typeSub">밝은 웜 확장형</div>
+    </div>
+  </div>
+
+  <!-- BALSEC 발색 구조 출력 카드 -->
+  <div class="balsec-output-card warm" id="toneCard">
+    <div class="balsec-type-label warm" id="toneBadge">WARM REFLECT</div>
+    <div class="balsec-engine-name" id="toneHeadline">Warm Reflect</div>
+    <div class="balsec-engine-sub" id="toneEngineSub">밝은 웜 확장형</div>
+
+    <!-- COLOR FLOW / LIGHT REFLECTION / COLOR DISTANCE -->
+    <div class="balsec-metrics">
+      <div class="balsec-metric">
+        <div class="balsec-metric-label">COLOR FLOW</div>
+        <div class="balsec-metric-value" id="metricColorFlow">Warm Bias 72</div>
+      </div>
+      <div class="balsec-metric">
+        <div class="balsec-metric-label">LIGHT REFLECT</div>
+        <div class="balsec-metric-value" id="metricLightReflect">L 78</div>
+      </div>
+      <div class="balsec-metric">
+        <div class="balsec-metric-label">COLOR DIST</div>
+        <div class="balsec-metric-value" id="metricColorDist" style="font-size:10px; line-height:1.3;">MID BALANCED ΔE</div>
+      </div>
+    </div>
+
+    <!-- ANALYSIS 흐름 -->
+    <div class="balsec-analysis">
+      <div class="balsec-analysis-label">ANALYSIS</div>
+      <div class="balsec-analysis-flow" id="analysisFlow">
+        <span id="flow1">color reflects softly</span>
+        <span class="balsec-flow-arrow">→</span>
+        <span id="flow2">becomes brighter</span>
+        <span class="balsec-flow-arrow">→</span>
+        <span id="flow3">light warm tones stand out</span>
+      </div>
+    </div>
+
+    <!-- INTERPRETATION -->
+    <div class="balsec-interpretation" id="toneCopy">
+      따뜻한 컬러가 피부 위에서 맑고 생기 있게 표현되는 타입입니다.
+    </div>
+
+    <!-- BEST COLOR WAY -->
+    <div class="balsec-analysis-label" style="margin-bottom:8px;">BEST COLOR WAY</div>
+    <div class="balsec-best-colors" id="bestColors">
+      <span class="balsec-color-chip">Bright Coral</span>
+      <span class="balsec-color-chip">Peach Pink</span>
+      <span class="balsec-color-chip">Soft Apricot</span>
+      <span class="balsec-color-chip">Light Orange</span>
+    </div>
+  </div>
+
+  <!-- ONE LINE SUMMARY -->
+  <div style="font-size:13px; color:var(--muted); line-height:1.7; text-align:center; padding:0 8px 16px; font-style:italic;" id="oneLiner">
+    밝고 생기 있는 웜 컬러가 가장 자연스럽게 확장되는 타입입니다.
+  </div>
+
+  <!-- 발색 구성비 (내부 참고용) -->
+  <div class="rgb-display">
+    <div class="rgb-title">발색 방향 구성비</div>
+    <div class="score-bars">
+      <div class="score-row">
+        <div>Warm</div>
+        <div class="score-track"><div class="score-fill" id="warmBar" style="width:0%; background:var(--warm);"></div></div>
+        <div id="warmVal">0%</div>
+      </div>
+      <div class="score-row">
+        <div>Cool</div>
+        <div class="score-track"><div class="score-fill" id="coolBar" style="width:0%; background:var(--cool);"></div></div>
+        <div id="coolVal">0%</div>
+      </div>
+      <div class="score-row">
+        <div>Neutral</div>
+        <div class="score-track"><div class="score-fill" id="neutralBar" style="width:0%; background:var(--neutral);"></div></div>
+        <div id="neutralVal">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 측정 수치 (RGB, 하위호환 유지) -->
+  <div class="rgb-display">
+    <div class="rgb-title">측정된 피부 RGB 값</div>
+    <div class="rgb-chips">
+      <div class="rgb-chip rgb-chip-r">R <span class="rgb-val" id="rVal">-</span></div>
+      <div class="rgb-chip rgb-chip-g">G <span class="rgb-val" id="gVal">-</span></div>
+      <div class="rgb-chip rgb-chip-b">B <span class="rgb-val" id="bVal">-</span></div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="goTo('s5')">제품 선택하러 가기 →</button>
+</section>
+
+<!-- ══════════════════════════════════════
+     SCREEN 5 — 제품 선택
+══════════════════════════════════════ -->
+<section class="screen" id="s5">
+  <div class="logo-bar">
+    <div class="logo">BALSEC · 발색 연구소</div>
+    <button class="back-btn" onclick="goTo('s4')">←</button>
+  </div>
+  <div style="text-align:center; font-size:26px; font-weight:900; letter-spacing:.08em; margin-bottom:6px; color:var(--text);">PICK & CHECK</div>
+  <div style="text-align:center; font-size:12px; color:var(--muted); margin-bottom:20px; letter-spacing:.04em;">선택 즉시 시뮬레이션으로 이동합니다</div>
+
+  <div class="product-grid" id="productGrid"></div>
+
+  <div style="text-align:center; font-size:12px; color:var(--muted); padding:8px 0 4px;">제품을 탭하면 바로 시뮬레이션으로 이동합니다</div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SCREEN 6 — 발색 시뮬레이션
+══════════════════════════════════════ -->
+<section class="screen" id="s6">
+  <div class="logo-bar">
+    <div class="logo">BALSEC · 발색 연구소</div>
+    <button class="back-btn" onclick="goTo('s5')">←</button>
+  </div>
+
+  <div class="sim-product-header">
+    <div class="sim-swatch-big" id="simSwatch"></div>
+    <div>
+      <div style="font-size:11px; font-weight:900; color:var(--muted); letter-spacing:.08em; text-transform:uppercase;" id="simBrand">MAC</div>
+      <div style="font-size:17px; font-weight:900;" id="simName">제품명</div>
+      <div style="font-size:12px; color:var(--muted);" id="simShade">컬러 정보</div>
+    </div>
+  </div>
+
+  <div class="sim-stage" id="simStage">
+    <div class="hand-shape" id="handShape"></div>
+    <div class="color-patch" id="colorPatch"></div>
+    <canvas class="sim-lip-canvas" id="lipCanvas"></canvas>
+    <div class="sim-no-photo" id="simNoPhoto" style="display:none;">
+      손등 이미지 위에<br>발색이 표시됩니다
+    </div>
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <div class="intensity-label">
+      <span>발림 강도</span>
+      <span id="intensityLabel">3회 발색</span>
+    </div>
+    <input type="range" id="intensitySlider" min="1" max="4" value="3" step="1" oninput="updateIntensity(this.value)" />
+    <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-top:4px;">
+      <span>1회</span><span>2회</span><span>3회</span><span>4회</span>
+    </div>
+  </div>
+
+  <div class="match-result-box">
+    <div class="match-rate-big" id="matchRateBig">--%</div>
+    <div class="match-comment" id="matchComment">피부톤 분석 후 매치율을 계산합니다</div>
+    <div class="match-bars">
+      <div class="match-bar-row">
+        <div>Color Match</div>
+        <div class="match-track"><div class="match-fill" id="barTemp" style="width:0%;"></div></div>
+        <div id="barTempVal">-</div>
+      </div>
+      <div class="match-bar-row">
+        <div>K-Preference</div>
+        <div class="match-track"><div class="match-fill" id="barDelta" style="width:0%;"></div></div>
+        <div id="barDeltaVal">-</div>
+      </div>
+      <div class="match-bar-row">
+        <div>Style Fit</div>
+        <div class="match-track"><div class="match-fill" id="barStable" style="width:0%;"></div></div>
+        <div id="barStableVal">-</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="goTo('s7')">이 결과로 피드백 남기기 →</button>
+</section>
+
+<!-- ══════════════════════════════════════
+     SCREEN 7 — 피드백 & 운영자 기록
+══════════════════════════════════════ -->
+<section class="screen" id="s7">
+  <div class="logo-bar">
+    <div class="logo">BALSEC · 발색 연구소</div>
+    <button class="back-btn" onclick="goTo('s6')">←</button>
+  </div>
+
+  <div style="font-size:22px; font-weight:900; letter-spacing:.04em; margin-bottom:4px;">HOW WAS IT?</div>
+  <div style="font-size:12px; color:var(--muted); margin-bottom:24px;">실제 발색 느낌과 비교해주세요</div>
+
+  <!-- 고객 만족도 -->
+  <div style="font-size:12px; font-weight:800; color:var(--muted); letter-spacing:.06em; margin-bottom:10px;">고객 만족도</div>
+  <div class="rating-group" id="ratingGroup" style="gap:6px; margin-bottom:24px;">
+    <div class="rating-btn" data-val="5" onclick="setRating(5)">
+      <span class="rating-emoji">😍</span>
+      <span class="rating-label">매우 잘</span>
+    </div>
+    <div class="rating-btn" data-val="4" onclick="setRating(4)">
+      <span class="rating-emoji">😊</span>
+      <span class="rating-label">잘 맞음</span>
+    </div>
+    <div class="rating-btn" data-val="3" onclick="setRating(3)">
+      <span class="rating-emoji">😐</span>
+      <span class="rating-label">보통</span>
+    </div>
+    <div class="rating-btn" data-val="2" onclick="setRating(2)">
+      <span class="rating-emoji">😕</span>
+      <span class="rating-label">별로</span>
+    </div>
+    <div class="rating-btn" data-val="1" onclick="setRating(1)">
+      <span class="rating-emoji">😞</span>
+      <span class="rating-label">안 맞음</span>
+    </div>
+  </div>
+
+  <!-- 미선택 이유 (Korean Preference 보정 핵심 데이터) -->
+  <div style="font-size:12px; font-weight:800; color:var(--muted); letter-spacing:.06em; margin-bottom:10px;">
+    선택 안 한 이유
+    <span style="font-size:10px; color:var(--muted); font-weight:700;"> · 복수 선택 가능</span>
+  </div>
+  <div style="display:grid; gap:8px; margin-bottom:24px;" id="rejectReasons">
+    <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg); border:1px solid var(--line); border-radius:14px; cursor:pointer;">
+      <input type="checkbox" value="취향_색" style="flex:0 0 auto;" />
+      <span style="font-size:13px; color:var(--text);">색이 취향이 아니에요</span>
+    </label>
+    <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg); border:1px solid var(--line); border-radius:14px; cursor:pointer;">
+      <input type="checkbox" value="실제_안어울림" style="flex:0 0 auto;" />
+      <span style="font-size:13px; color:var(--text);">실제로 발라보니 안 어울려요</span>
+    </label>
+    <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg); border:1px solid var(--line); border-radius:14px; cursor:pointer;">
+      <input type="checkbox" value="나이_스타일" style="flex:0 0 auto;" />
+      <span style="font-size:13px; color:var(--text);">나이·스타일에 안 맞아요</span>
+    </label>
+    <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg); border:1px solid var(--line); border-radius:14px; cursor:pointer;">
+      <input type="checkbox" value="가격" style="flex:0 0 auto;" />
+      <span style="font-size:13px; color:var(--text);">가격이 부담돼요</span>
+    </label>
+    <label style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--bg); border:1px solid var(--line); border-radius:14px; cursor:pointer;">
+      <input type="checkbox" value="브랜드" style="flex:0 0 auto;" />
+      <span style="font-size:13px; color:var(--text);">브랜드가 마음에 안 들어요</span>
+    </label>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 운영자 기록 -->
+  <div style="background:var(--bg); border:1px solid var(--line); border-radius:18px; padding:16px; margin-bottom:16px;">
+    <div style="font-size:11px; font-weight:900; color:var(--muted); letter-spacing:.08em; margin-bottom:10px;">OPERATOR NOTE</div>
+    <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">실제 발색이 시스템 분석과 일치했나요?</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+      <button class="op-btn" id="opY" onclick="setOperator('Y')" style="padding:10px; border-radius:12px; border:1px solid var(--line); background:var(--white); font-size:13px; font-weight:800; cursor:pointer; color:var(--text);">일치</button>
+      <button class="op-btn" id="opN" onclick="setOperator('N')" style="padding:10px; border-radius:12px; border:1px solid var(--line); background:var(--white); font-size:13px; font-weight:800; cursor:pointer; color:var(--text);">불일치</button>
+    </div>
+    <textarea id="operatorNote" rows="2" placeholder="특이사항 메모 (선택)" style="width:100%; border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:13px; background:var(--white); resize:none;"></textarea>
+  </div>
+
+  <!-- 추가 정보 -->
+  <div style="display:grid; gap:8px; margin-bottom:20px;">
+    <select id="ageGroupSelect" style="border:1px solid var(--line); border-radius:12px; padding:11px 12px; font-size:13px; background:var(--bg); color:var(--muted);">
+      <option value="">연령대 (선택)</option>
+      <option>10대</option><option>20대</option><option>30대</option><option>40대 이상</option>
+    </select>
+    <select id="makeupStyleSelect" style="border:1px solid var(--line); border-radius:12px; padding:11px 12px; font-size:13px; background:var(--bg); color:var(--muted);">
+      <option value="">평소 메이크업 스타일 (선택)</option>
+      <option>거의 안 함</option><option>자연스럽게</option><option>중간 정도</option><option>진하게</option>
+    </select>
+  </div>
+
+  <button id="saveBtn" class="btn btn-primary" onclick="saveSample()">저장하기</button>
+</section>
+
+<!-- ══════════════════════════════════════
+     SCREEN 8 — 저장 완료
+══════════════════════════════════════ -->
+<section class="screen" id="s8">
+  <div class="logo-bar">
+    <div class="logo">BALSEC · 발색 연구소</div>
+  </div>
+
+  <div style="text-align:center; padding:32px 0 28px;">
+    <div style="width:56px; height:56px; border-radius:50%; background:var(--bg); border:1px solid var(--line); margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:22px; color:var(--text);">✓</div>
+    <div style="font-size:24px; font-weight:900; letter-spacing:.08em; margin-bottom:6px; color:var(--text);">SAVED</div>
+    <div style="font-size:13px; color:var(--muted); margin-bottom:16px; line-height:1.6;">데이터가 저장되었습니다<br>알고리즘 개선에 활용됩니다</div>
+    <div style="display:inline-flex; align-items:center; gap:6px; background:var(--bg); border:1px solid var(--line); border-radius:999px; padding:8px 16px; font-size:13px; font-weight:800; color:var(--muted);">
+      누적 샘플 <span style="color:var(--text);" id="totalCount">0</span>건
+    </div>
+  </div>
+
+  <!-- 저장 요약 -->
+  <div style="background:var(--bg); border:1px solid var(--line); border-radius:18px; padding:16px; margin-bottom:20px;" id="saveSummaryCard"></div>
+
+  <div style="display:grid; gap:8px;">
+    <button class="btn btn-accent" onclick="goToFeed()">📸 피드 이미지 만들기</button>
+    <button class="btn btn-primary" onclick="restartTest()">새 테스트 시작</button>
+    <button class="btn btn-secondary" onclick="goTo('s8data')">데이터 보기</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SCREEN 9 — 인스타 피드 카드 내보내기
+══════════════════════════════════════ -->
+<section class="screen" id="s9">
+  <div class="logo-bar">
+    <div class="logo">BALSEC · 발색 연구소</div>
+    <button class="back-btn" onclick="goTo('s8')">←</button>
+  </div>
+
+  <div style="font-size:20px; font-weight:900; letter-spacing:.04em; margin-bottom:4px;">FEED CARD</div>
+  <div style="font-size:12px; color:var(--muted); margin-bottom:20px;">분석 결과를 이미지로 저장하세요</div>
+
+  <!-- 피드 카드 캡처 대상 -->
+  <div style="display:flex; justify-content:center; margin-bottom:20px; overflow:hidden;">
+    <div id="feedCardExport" class="fc-canvas">
+
+      <!-- 좌측: 사진 -->
+      <div class="fc-photo-side" id="fcPhotoBox">
+        <div class="fc-type-badge" id="fcTypeBadge">WARM TYPE</div>
+        <img id="fcHandImg" src="" alt="손등 사진" />
+        <div class="fc-photo-fallback" id="fcFallback">HAND PHOTO</div>
+        <div class="fc-photo-overlay">
+          <div class="fc-client-label">CLIENT ID</div>
+          <div class="fc-client-id" id="fcClientId">—</div>
+        </div>
+      </div>
+
+      <div class="fc-divider-v"></div>
+
+      <!-- 우측: 분석 정보 -->
+      <div class="fc-info-side">
+        <div class="fc-report-label" id="fcReportLabel">BALSEC LAB REPORT</div>
+        <div class="fc-type-name" id="fcTypeName">—</div>
+
+        <div class="fc-hr"></div>
+
+        <div class="fc-rgb-row">
+          <span class="fc-section-label">SKIN DATA (RGB)</span>
+          <span class="fc-rgb-value" id="fcRgbValue">— · — · —</span>
+        </div>
+
+        <div class="fc-axis-group">
+          <div class="fc-axis-item">
+            <div class="fc-axis-header">
+              <span class="fc-axis-key">BRIGHTNESS (L)</span>
+              <span class="fc-axis-val" id="fcBrightnessVal">—</span>
+            </div>
+            <div class="fc-bar-track"><div class="fc-bar-fill fc-bar-dark" id="fcBrightnessBar"></div></div>
+            <div class="fc-axis-desc" id="fcBrightnessDesc">—</div>
+          </div>
+          <div class="fc-axis-item">
+            <div class="fc-axis-header">
+              <span class="fc-axis-key">WARM AXIS</span>
+              <span class="fc-axis-val" id="fcWarmVal">—</span>
+            </div>
+            <div class="fc-bar-track"><div class="fc-bar-fill fc-bar-warm" id="fcWarmBar"></div></div>
+            <div class="fc-axis-desc" id="fcWarmDesc">—</div>
+          </div>
+          <div class="fc-axis-item">
+            <div class="fc-axis-header">
+              <span class="fc-axis-key">COOL AXIS</span>
+              <span class="fc-axis-val" id="fcCoolVal">—</span>
+            </div>
+            <div class="fc-bar-track"><div class="fc-bar-fill fc-bar-muted" id="fcCoolBar"></div></div>
+            <div class="fc-axis-desc" id="fcCoolDesc">—</div>
+          </div>
+        </div>
+
+        <div class="fc-hr"></div>
+
+        <div class="fc-conclusion-box">
+          <div class="fc-section-label" style="margin-bottom:4px;">CONCLUSION</div>
+          <div class="fc-conclusion-title" id="fcConclusionTitle">—</div>
+          <div class="fc-conclusion-desc" id="fcConclusionDesc">—</div>
+        </div>
+
+        <div class="fc-color-section">
+          <div class="fc-section-label">BEST COLOR TONE</div>
+          <div class="fc-color-list" id="fcColorList"></div>
+        </div>
+
+        <div class="fc-hr"></div>
+
+        <div class="fc-branding">
+          <div>
+            <div class="fc-brand-name">BALSEC.lab</div>
+            <div class="fc-brand-sub">Skin Data Based Analysis</div>
+          </div>
+          <div class="fc-brand-right">SKIN DATA<br>BASED · YOU</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 저장 버튼 -->
+  <div style="display:grid; gap:8px;">
+    <button class="btn btn-primary" onclick="downloadFeedCard()">⬇ 이미지 다운로드</button>
+    <button class="btn btn-secondary" onclick="openFeedImage()">📱 이미지 열기 (iPhone)</button>
+    <button class="btn btn-secondary" onclick="goTo('s8')">← 돌아가기</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SCREEN 8data — 데이터 뷰어
+══════════════════════════════════════ -->
+<section class="screen" id="s8data">
+  <div class="logo-bar">
+    <div class="logo">BALSEC · 발색 연구소</div>
+    <button class="back-btn" onclick="goTo('s8')">←</button>
+  </div>
+  <div class="page-title">수집된<br>샘플 데이터</div>
+  <p class="page-sub" id="dataCountLabel">총 0건의 데이터가 수집되었습니다</p>
+
+  <div id="dataList" style="display:grid; gap:10px; margin-bottom:20px;"></div>
+
+  <button class="btn btn-secondary" onclick="clearAllData()">전체 데이터 초기화</button>
+</section>
+
+</div><!-- /app -->
+
+<script>
+// ══════════════════════════════════════
+// 제품 DB (10개)
+// ══════════════════════════════════════
+// ══════════════════════════════════════
+// Korean Preference 가중치 테이블 v1.0
+// 근거: 올리브영 1.8억건 구매데이터 +
+//       신세계면세점 AI분석 + 2025 트렌드
+// ══════════════════════════════════════
+const KP_WEIGHT = {
+  mlbb:     +15,  // MLBB/로즈베이지/모브 — 최상위
+  red:      +10,  // 클래식레드/체리레드 — 상위
+  burgundy: +8,   // 버건디/딥로즈 — 상위
+  brown:    +3,   // 브라운/브릭 — 중위
+  nude:     0,    // 누드베이지 — 중립
+  coral:    -5,   // 코랄/피치 — 낮음
+  orange:   -10,  // 오렌지 계열 — 최하위
+};
+
+const PRODUCTS = [
+  {
+    id: 'mac_rubywoo',
+    brand: 'MAC',
+    name: 'Ruby Woo',
+    shade: '클래식 레드 · 쿨톤 · 매트',
+    colorGroup: 'red',
+    price: '₩39,000',
+    review: { score: 4.8, count: '1,256' },
+    hex: '#c23a3a',
+    rgb: { r: 194, g: 58, b: 58 },
+    temp: 'cool',
+    pigment: 'full',
+    texture: 'matte'
+  },
+  {
+    id: 'dior_999',
+    brand: 'Dior',
+    name: 'Rouge Dior 999',
+    shade: '시그니처 레드 · 뉴트럴 · 새틴',
+    colorGroup: 'red',
+    price: '₩62,000',
+    review: { score: 4.7, count: '892' },
+    hex: '#c83d50',
+    rgb: { r: 200, g: 61, b: 80 },
+    temp: 'neutral',
+    pigment: 'full',
+    texture: 'satin'
+  },
+  {
+    id: 'ysl_01',
+    brand: 'YSL',
+    name: 'Rouge Pur Couture 01',
+    shade: '쿨 레드 · 쿨톤 · 새틴',
+    colorGroup: 'red',
+    price: '₩55,000',
+    review: { score: 4.5, count: '628' },
+    hex: '#b83050',
+    rgb: { r: 184, g: 48, b: 80 },
+    temp: 'cool',
+    pigment: 'full',
+    texture: 'satin'
+  },
+  {
+    id: 'romand_juicy',
+    brand: 'Rom&nd',
+    name: 'Juicy Lasting Tint 01',
+    shade: '쥬시 코랄 · 웜톤 · 글로시',
+    colorGroup: 'coral',
+    price: '₩13,000',
+    review: { score: 4.6, count: '3,421' },
+    hex: '#d97060',
+    rgb: { r: 217, g: 112, b: 96 },
+    temp: 'warm',
+    pigment: 'buildable',
+    texture: 'gloss'
+  },
+  {
+    id: '3ce_velvet',
+    brand: '3CE',
+    name: 'Velvet Lip Tint 06',
+    shade: '로지 브릭 · 웜톤 · 벨벳',
+    colorGroup: 'brown',
+    price: '₩19,000',
+    review: { score: 4.5, count: '2,108' },
+    hex: '#a85040',
+    rgb: { r: 168, g: 80, b: 64 },
+    temp: 'warm',
+    pigment: 'full',
+    texture: 'velvet'
+  },
+  {
+    id: 'chanel_pirate',
+    brand: 'Chanel',
+    name: 'Rouge Allure 99 Pirate',
+    shade: '딥 레드 · 쿨톤 · 새틴',
+    colorGroup: 'burgundy',
+    price: '₩58,000',
+    review: { score: 4.6, count: '741' },
+    hex: '#9a2838',
+    rgb: { r: 154, g: 40, b: 56 },
+    temp: 'cool',
+    pigment: 'full',
+    texture: 'satin'
+  },
+  {
+    id: 'peripera_coral',
+    brand: 'Peripera',
+    name: 'Ink Velvet 01',
+    shade: '코랄 피치 · 웜톤 · 매트',
+    colorGroup: 'coral',
+    price: '₩9,900',
+    review: { score: 4.4, count: '5,632' },
+    hex: '#e08060',
+    rgb: { r: 224, g: 128, b: 96 },
+    temp: 'warm',
+    pigment: 'full',
+    texture: 'matte'
+  },
+  {
+    id: 'etude_rosy',
+    brand: 'Etude',
+    name: 'Fixing Tint 07',
+    shade: '로지 핑크 · 쿨톤 · 글로시',
+    colorGroup: 'mlbb',
+    price: '₩8,500',
+    review: { score: 4.3, count: '4,217' },
+    hex: '#c06070',
+    rgb: { r: 192, g: 96, b: 112 },
+    temp: 'cool',
+    pigment: 'buildable',
+    texture: 'gloss'
+  },
+  {
+    id: 'merzy_brick',
+    brand: 'Merzy',
+    name: 'The First Tint T7',
+    shade: '브릭 로즈 · 뉴트럴 · 새틴',
+    colorGroup: 'brown',
+    price: '₩12,000',
+    review: { score: 4.4, count: '1,893' },
+    hex: '#b06060',
+    rgb: { r: 176, g: 96, b: 96 },
+    temp: 'neutral',
+    pigment: 'buildable',
+    texture: 'satin'
+  },
+  {
+    id: 'hera_nudist',
+    brand: 'HERA',
+    name: 'Sensual Nude Balm 355',
+    shade: '누드 코랄 · 웜톤 · 글로시',
+    colorGroup: 'nude',
+    price: '₩32,000',
+    review: { score: 4.2, count: '987' },
+    hex: '#c89070',
+    rgb: { r: 200, g: 144, b: 112 },
+    temp: 'warm',
+    pigment: 'sheer',
+    texture: 'gloss'
+  }
+];
+
+// ══════════════════════════════════════
+// BALSEC TYPE 분류 기준 (LAB 기반)
+// ══════════════════════════════════════
+const BALSEC_TYPES = {
+  '01': {
+    engineType:   'WARM REFLECT',
+    name:         'Warm Reflect',
+    sub:          '밝은 웜 확장형',
+    temp:         'warm',
+    tempClass:    'warm',
+    colorFlow:    'Warm Bias 72',
+    lightReflect: 'L 78',
+    colorDist:    'MID BALANCED ΔE',
+    analysisFlow: ['color reflects softly', 'becomes brighter', 'light warm tones stand out'],
+    interpretation: '따뜻한 컬러가 피부 위에서 맑고 생기 있게 표현되는 타입입니다. 밝은 웜 계열 컬러일수록 깨끗하고 자연스럽게 확장되며, 피치·코랄 계열에서 가장 안정적인 발색이 나타납니다.',
+    bestColors:   ['Bright Coral', 'Peach Pink', 'Soft Apricot', 'Light Orange'],
+    oneLiner:     '밝고 생기 있는 웜 컬러가 가장 자연스럽게 확장되는 타입입니다.',
+    // 하위 호환 (매치율 계산용)
+    cardClass: 'tone-warm', badgeClass: 'badge-warm', badgeText: 'Warm Reflect',
+    headline: 'Warm Reflect · 밝은 웜 확장형',
+    copy: '따뜻한 컬러가 피부 위에서 맑고 생기 있게 표현되는 타입입니다. 피치·코랄 계열에서 가장 안정적인 발색이 나타납니다.',
+    goodColors: '피치, 코랄, 소프트 오렌지, 살몬'
+  },
+  '02': {
+    engineType:   'WARM ABSORB',
+    name:         'Warm Absorb',
+    sub:          '깊은 웜 안정형',
+    temp:         'warm',
+    tempClass:    'warm',
+    colorFlow:    'Warm Depth 68',
+    lightReflect: 'L 63',
+    colorDist:    'MID TO HIGH ΔE',
+    analysisFlow: ['color absorbs into skin', 'becomes deeper', 'deep warm tones work best'],
+    interpretation: '따뜻한 컬러가 피부에 자연스럽게 스며들며 깊이감 있게 표현되는 타입입니다. 밝은 컬러보다는 브릭·테라코타·딥 코랄 계열에서 가장 안정적인 발색이 나타납니다.',
+    bestColors:   ['Brick Red', 'Terracotta', 'Deep Coral', 'Warm Brown'],
+    oneLiner:     '깊고 안정적인 웜 컬러에서 가장 자연스러운 밀도감이 형성되는 타입입니다.',
+    cardClass: 'tone-warm', badgeClass: 'badge-warm', badgeText: 'Warm Absorb',
+    headline: 'Warm Absorb · 깊은 웜 안정형',
+    copy: '따뜻한 컬러가 피부에 자연스럽게 스며들며 깊이감 있게 표현되는 타입입니다. 브릭·테라코타·딥 코랄 계열이 가장 잘 맞습니다.',
+    goodColors: '브릭, 테라코타, 딥 코랄, 웜 브라운'
+  },
+  '03': {
+    engineType:   'COOL REFLECT',
+    name:         'Cool Reflect',
+    sub:          '밝은 쿨 강조형',
+    temp:         'cool',
+    tempClass:    'cool',
+    colorFlow:    'Pink Bias 74',
+    lightReflect: 'L 76',
+    colorDist:    'MID BALANCED ΔE',
+    analysisFlow: ['color reflects strongly', 'becomes vivid', 'bright cool tones stand out'],
+    interpretation: '차가운 컬러가 피부 위에서 선명하고 또렷하게 표현되는 타입입니다. 핑크·로즈·체리 계열처럼 쿨 성분이 분명한 컬러에서 가장 강한 발색 효과가 나타납니다.',
+    bestColors:   ['Cool Pink', 'Rose Red', 'Cherry', 'Magenta'],
+    oneLiner:     '맑고 선명한 쿨 컬러가 가장 강하게 살아나는 타입입니다.',
+    cardClass: 'tone-cool', badgeClass: 'badge-cool', badgeText: 'Cool Reflect',
+    headline: 'Cool Reflect · 밝은 쿨 강조형',
+    copy: '차가운 컬러가 피부 위에서 선명하고 또렷하게 표현되는 타입입니다. 핑크·로즈·체리 계열에서 가장 강한 발색 효과가 나타납니다.',
+    goodColors: '쿨 핑크, 로즈, 체리, 마젠타'
+  },
+  '04': {
+    engineType:   'COOL PRESERVE',
+    name:         'Cool Preserve',
+    sub:          '쿨 안정 유지형',
+    temp:         'cool',
+    tempClass:    'cool',
+    colorFlow:    'Cool Balance 66',
+    lightReflect: 'L 67',
+    colorDist:    'MID BALANCED ΔE',
+    analysisFlow: ['color holds steadily', 'stays balanced', 'cool deep tones work naturally'],
+    interpretation: '차분한 쿨 컬러가 안정적이고 균형 있게 유지되는 타입입니다. 모브·플럼·딥 로즈 계열처럼 깊이감 있는 쿨 컬러에서 가장 자연스러운 발색이 나타납니다.',
+    bestColors:   ['Plum', 'Mauve', 'Deep Berry', 'Wine Rose'],
+    oneLiner:     '차분한 쿨 컬러가 가장 안정적으로 유지되는 타입입니다.',
+    cardClass: 'tone-cool', badgeClass: 'badge-cool', badgeText: 'Cool Preserve',
+    headline: 'Cool Preserve · 쿨 안정 유지형',
+    copy: '차분한 쿨 컬러가 안정적이고 균형 있게 유지되는 타입입니다. 모브·플럼·딥 로즈 계열에서 가장 자연스러운 발색이 나타납니다.',
+    goodColors: '모브, 버건디, 딥 로즈, 쿨 플럼'
+  },
+  '05': {
+    engineType:   'NEUTRAL DIFFUSE',
+    name:         'Neutral Diffuse',
+    sub:          '부드러운 뉴트럴 분산형',
+    temp:         'neutral',
+    tempClass:    'neutral',
+    colorFlow:    'Balanced Flow 51',
+    lightReflect: 'L 64',
+    colorDist:    'LOW TO MID ΔE',
+    analysisFlow: ['color diffuses softly', 'becomes muted', 'soft tones feel natural'],
+    interpretation: '색이 강하게 튀기보다 부드럽고 자연스럽게 퍼지는 타입입니다. 저채도·뮤트 계열 컬러에서 가장 편안하고 안정적인 발색이 나타납니다.',
+    bestColors:   ['Nude Pink', 'Dusty Rose', 'Soft Beige', 'Muted Coral'],
+    oneLiner:     '부드러운 저채도 컬러가 가장 자연스럽게 어우러지는 타입입니다.',
+    cardClass: 'tone-neutral', badgeClass: 'badge-neutral', badgeText: 'Neutral Diffuse',
+    headline: 'Neutral Diffuse · 부드러운 뉴트럴 분산형',
+    copy: '색이 강하게 튀기보다 부드럽고 자연스럽게 퍼지는 타입입니다. 저채도·뮤트 계열 컬러에서 가장 편안한 발색이 나타납니다.',
+    goodColors: '누드 핑크, 더스티 로즈, 소프트 베이지, 뮤트 코랄'
+  },
+  '06': {
+    engineType:   'NEUTRAL PRESERVE',
+    name:         'Neutral Preserve',
+    sub:          '균형 재현형',
+    temp:         'neutral',
+    tempClass:    'neutral',
+    colorFlow:    'Clear Balance 70',
+    lightReflect: 'L 72',
+    colorDist:    'MID BALANCED ΔE',
+    analysisFlow: ['color stays true', 'preserves original tone', 'most tones work naturally'],
+    interpretation: '컬러가 과하게 왜곡되지 않고 본연의 느낌에 가깝게 표현되는 타입입니다. 다양한 컬러를 안정적으로 소화하며 균형 잡힌 발색이 나타납니다.',
+    bestColors:   ['Natural Rose', 'Clear Coral', 'Balanced Pink', 'Classic Red'],
+    oneLiner:     '다양한 컬러가 가장 자연스럽게 재현되는 균형형 타입입니다.',
+    cardClass: 'tone-neutral', badgeClass: 'badge-neutral', badgeText: 'Neutral Preserve',
+    headline: 'Neutral Preserve · 균형 재현형',
+    copy: '컬러가 과하게 왜곡되지 않고 본연의 느낌에 가깝게 표현되는 타입입니다. 다양한 컬러를 안정적으로 소화합니다.',
+    goodColors: '내추럴 로즈, 클리어 코랄, 클래식 레드'
+  }
+};
+
+// ══════════════════════════════════════
+// 상태 관리
+// ══════════════════════════════════════
+let state = {
+  hand1: null, hand2: null, face: null,
+  skinRGB: null, skinResult: null, balsecType: null,
+  selectedProduct: null,
+  intensity: 3,
+  customerRating: null,
+  operatorMatch: null,
+  lipRGB: null
+};
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbzLEd_W6LY0c09n1S-uvKSAV_jVln7QO05ZszqrRDUB8OCuZfsjxZ6dSBW6dvsP3RKtdQ/exec";
+// ══════════════════════════════════════
+// ══════════════════════════════════════
+// 이미지 업로드 처리
+// ══════════════════════════════════════
+function setupUpload(inputId, previewWrapId, previewImgId, stateKey) {
+  document.getElementById(inputId).addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      state[stateKey] = ev.target.result;
+      const wrap = document.getElementById(previewWrapId);
+      const img = document.getElementById(previewImgId);
+      img.src = ev.target.result;
+      wrap.style.display = 'block';
+      checkAnalyzeReady();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+setupUpload('hand1', 'prev1', 'prevImg1', 'hand1');
+setupUpload('hand2', 'prev2', 'prevImg2', 'hand2');
+setupUpload('face', 'prev3', 'prevImg3', 'face');
+
+function checkAnalyzeReady() {
+  const btn = document.getElementById('analyzeBtn');
+  if (state.hand1 && state.hand2) {
+    btn.disabled = false;
+  }
+}
+
+// ══════════════════════════════════════
+// BALSEC 촬영 보정 로직 v1
+// ══════════════════════════════════════
+let analysisAborted = false;
+
+function cancelAnalysis() {
+  analysisAborted = true;
+  document.querySelectorAll('#s3 .prog-item').forEach(p => p.classList.remove('done'));
+  document.getElementById('qualityFeedback').style.display = 'none';
+  goTo('s2');
+}
+
+function clamp(value, min = 0, max = 255) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function getBrightness(r, g, b) {
+  return 0.299 * r + 0.587 * g + 0.114 * b;
+}
+
+function normalizeBrightness(r, g, b, targetBrightness = 148) {
+  const current = getBrightness(r, g, b);
+  if (current === 0) return { r, g, b };
+  const ratio = targetBrightness / current;
+  return {
+    r: clamp(Math.round(r * ratio)),
+    g: clamp(Math.round(g * ratio)),
+    b: clamp(Math.round(b * ratio))
+  };
+}
+
+function correctColorBias(r, g, b) {
+  const avg = (r + g + b) / 3;
+  let nr = r, ng = g, nb = b;
+  const rd = r - avg, gd = g - avg, bd = b - avg;
+  if (rd > 15) nr = r - rd * 0.25;
+  if (gd > 15) ng = g - gd * 0.20;
+  if (bd > 15) nb = b - bd * 0.20;
+  if (rd < -15) nr = r + Math.abs(rd) * 0.15;
+  if (bd < -15) nb = b + Math.abs(bd) * 0.15;
+  return { r: clamp(Math.round(nr)), g: clamp(Math.round(ng)), b: clamp(Math.round(nb)) };
+}
+
+function evaluatePhotoQuality(r, g, b) {
+  const brightness = getBrightness(r, g, b);
+  const issues = [];
+  let status = 'good';
+  if (brightness > 210) { status = 'warn'; issues.push('사진이 너무 밝습니다 (자연광 권장)'); }
+  if (brightness < 60)  { status = 'warn'; issues.push('사진이 너무 어둡습니다'); }
+  if (r - g > 25) issues.push('붉은 조명 영향 감지');
+  if (g - b > 25) issues.push('노란/형광등 조명 영향 감지');
+  if (b - r > 20) issues.push('푸른 조명 영향 감지');
+  return { status, issues, brightness };
+}
+
+// Canvas RGB 추출 + BALSEC 보정 적용
+function extractRGB(base64) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.getElementById('analyzeCanvas');
+      // 중앙 40% 영역 샘플링 (배경 제외)
+      const sw = Math.floor(img.width * 0.40);
+      const sh = Math.floor(img.height * 0.40);
+      const sx = Math.floor(img.width * 0.30);
+      const sy = Math.floor(img.height * 0.30);
+      canvas.width = sw; canvas.height = sh;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+      const data = ctx.getImageData(0, 0, sw, sh).data;
+
+      let rS=0, gS=0, bS=0, cnt=0;
+      for (let i=0; i<data.length; i+=4) {
+        const r=data[i], g=data[i+1], b=data[i+2];
+        const br = (r+g+b)/3;
+        if (br > 50 && br < 230 && r > 60) { rS+=r; gS+=g; bS+=b; cnt++; }
+      }
+      if (!cnt) { resolve(null); return; }
+
+      const raw = {
+        r: Math.round(rS/cnt),
+        g: Math.round(gS/cnt),
+        b: Math.round(bS/cnt)
+      };
+
+      // BALSEC 보정 파이프라인
+      const quality = evaluatePhotoQuality(raw.r, raw.g, raw.b);
+      let corrected = normalizeBrightness(raw.r, raw.g, raw.b, 148);
+      corrected = correctColorBias(corrected.r, corrected.g, corrected.b);
+
+      resolve({ ...corrected, quality, raw });
+    };
+    img.onerror = () => resolve(null);
+    img.src = base64;
+  });
+}
+
+// 얼굴 사진에서 입술 영역 RGB 추출 (하단 30% 중앙)
+function extractLipRGB(base64) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.getElementById('analyzeCanvas');
+      const sw = Math.floor(img.width * 0.3);
+      const sh = Math.floor(img.height * 0.08);
+      const sx = Math.floor(img.width * 0.35);
+      const sy = Math.floor(img.height * 0.70);
+      canvas.width = sw; canvas.height = sh;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+      const data = ctx.getImageData(0,0,sw,sh).data;
+      let rS=0,gS=0,bS=0,cnt=0;
+      for (let i=0;i<data.length;i+=4) {
+        const r=data[i],g=data[i+1],b=data[i+2];
+        if (r>80 && r>g+10) { rS+=r; gS+=g; bS+=b; cnt++; }
+      }
+      if (!cnt) { resolve(null); return; }
+      resolve({ r: Math.round(rS/cnt), g: Math.round(gS/cnt), b: Math.round(bS/cnt) });
+    };
+    img.onerror = () => resolve(null);
+    img.src = base64;
+  });
+}
+
+// ══════════════════════════════════════
+// RGB → CIE LAB 변환
+// ══════════════════════════════════════
+function rgbToLab(r, g, b) {
+  // Step 1: RGB → Linear RGB (sRGB gamma 제거)
+  let rL = r / 255, gL = g / 255, bL = b / 255;
+  rL = rL > 0.04045 ? Math.pow((rL + 0.055) / 1.055, 2.4) : rL / 12.92;
+  gL = gL > 0.04045 ? Math.pow((gL + 0.055) / 1.055, 2.4) : gL / 12.92;
+  bL = bL > 0.04045 ? Math.pow((bL + 0.055) / 1.055, 2.4) : bL / 12.92;
+
+  // Step 2: Linear RGB → XYZ (D65 기준)
+  const X = rL * 0.4124564 + gL * 0.3575761 + bL * 0.1804375;
+  const Y = rL * 0.2126729 + gL * 0.7151522 + bL * 0.0721750;
+  const Z = rL * 0.0193339 + gL * 0.1191920 + bL * 0.9503041;
+
+  // Step 3: XYZ → LAB (D65 화이트포인트로 정규화)
+  const xn = X / 0.95047, yn = Y / 1.00000, zn = Z / 1.08883;
+  const f = v => v > 0.008856 ? Math.cbrt(v) : (7.787 * v) + (16 / 116);
+  const fx = f(xn), fy = f(yn), fz = f(zn);
+
+  const L_val = (116 * fy) - 16;
+  const a_val = 500 * (fx - fy);
+  const b_val = 200 * (fy - fz);
+
+  return { L: L_val, a: a_val, b: b_val };
+}
+
+// ══════════════════════════════════════
+// 피부톤 분류 → BALSEC TYPE (LAB 기반)
+// PDF 기준 조건식 그대로 적용
+// ══════════════════════════════════════
+function classifyBalsecType(r, g, b) {
+  const { L, a, b: bLab } = rgbToLab(r, g, b);
+
+  // TYPE 판별 우선순위: 조건이 겹칠 경우 위에서부터 먼저 매칭
+  let typeKey;
+
+  // TYPE 01 — Warm Reflect: WARM_LIGHT
+  // L >= 74, b >= 14, a <= 8
+  if (L >= 74 && bLab >= 14 && a <= 8) {
+    typeKey = '01';
+  }
+  // TYPE 03 — Cool Reflect: COOL_LIGHT
+  // L >= 72, a >= 8, b <= 10
+  else if (L >= 72 && a >= 8 && bLab <= 10) {
+    typeKey = '03';
+  }
+  // TYPE 06 — Neutral Preserve: NEUTRAL_CLEAR
+  // L >= 70, |a - b| < 6 (DELTA_BALANCE)
+  else if (L >= 70 && Math.abs(a - bLab) < 6) {
+    typeKey = '06';
+  }
+  // TYPE 02 — Warm Absorb: WARM_DEEP
+  // 60 <= L <= 68, b >= 12, a <= 8
+  else if (L >= 60 && L <= 68 && bLab >= 12 && a <= 8) {
+    typeKey = '02';
+  }
+  // TYPE 04 — Cool Preserve: MEDIUM_COOL
+  // 62 <= L <= 70, a >= 9, b <= 10
+  else if (L >= 62 && L <= 70 && a >= 9 && bLab <= 10) {
+    typeKey = '04';
+  }
+  // TYPE 05 — Neutral Diffuse: NEUTRAL_SOFT
+  // 64 <= L <= 74, |a| < 4 (A_SOFT), |b| < 4 (B_SOFT)
+  else if (L >= 64 && L <= 74 && Math.abs(a) < 4 && Math.abs(bLab) < 4) {
+    typeKey = '05';
+  }
+  // Fallback — 경계값 밖 케이스: 가장 가까운 TYPE으로 추정
+  else {
+    // 웜/쿨/뉴트럴 방향 + 밝기로 fallback 분류
+    const isWarm    = bLab > a && bLab > 0;
+    const isCool    = a > bLab && a > 0;
+    const isLight   = L >= 68;
+    if (isWarm && isLight)        typeKey = '01';
+    else if (isWarm && !isLight)  typeKey = '02';
+    else if (isCool && isLight)   typeKey = '03';
+    else if (isCool && !isLight)  typeKey = '04';
+    else if (L < 68)              typeKey = '05';
+    else                          typeKey = '06';
+  }
+
+  // 하위 호환용 warm/cool/neutral % 계산 (기존 UI 바 차트용)
+  // LAB a축(red-green), b축(yellow-blue) 기반으로 스코어 산출
+  const warmRaw    = Math.max(0, bLab * 2.5 + (a > 0 ? a * 0.5 : 0));
+  const coolRaw    = Math.max(0, a * 3.0 + (bLab < 0 ? Math.abs(bLab) * 0.5 : 0));
+  const neutralRaw = Math.max(0, 60 - Math.abs(a) * 2 - Math.abs(bLab) * 2);
+  const total      = warmRaw + coolRaw + neutralRaw || 1;
+  const warm    = Math.round((warmRaw / total) * 100);
+  const cool    = Math.round((coolRaw / total) * 100);
+  const neutral = 100 - warm - cool;
+
+  // brightness (UI 표시용)
+  const brightness = L >= 72 ? 'light' : L >= 60 ? 'mid' : 'deep';
+
+  return {
+    typeKey,
+    warm: Math.max(0, warm),
+    cool: Math.max(0, cool),
+    neutral: Math.max(0, Math.max(0, neutral)),
+    brightness,
+    L: Math.round(L * 10) / 10,
+    a: Math.round(a * 10) / 10,
+    bLab: Math.round(bLab * 10) / 10
+  };
+}
+
+// ══════════════════════════════════════
+// (하위 호환) RGB → HSL — 기존 코드에서 참조하는 곳 있을 경우 유지
+// ══════════════════════════════════════
+function rgbToHsl(r,g,b) {
+  const r1=r/255,g1=g/255,b1=b/255;
+  const max=Math.max(r1,g1,b1), min=Math.min(r1,g1,b1);
+  const L=(max+min)/2;
+  const S=max===min?0:L>0.5?(max-min)/(2-max-min):(max-min)/(max+min);
+  return { L, S };
+}
+
+// ══════════════════════════════════════
+// 매치율 계산 v2.0
+// 3축 구조:
+//   Color Match     45% — CIE ΔE 기반
+//   Korean Pref     35% — 실구매 선호도 기반
+//   Style Fit       20% — 발색 안정도 (추후 개인화)
+// ══════════════════════════════════════
+function calcMatchRate(skinRGB, product, intensity) {
+  const sR=skinRGB.r, sG=skinRGB.g, sB=skinRGB.b;
+  const pR=product.rgb.r, pG=product.rgb.g, pB=product.rgb.b;
+
+  // ── 축 1: Color Match (45%) ──
+  // CIE 가중 RGB 색차 ΔE
+  const deltaE = Math.sqrt(
+    Math.pow((sR-pR)*0.30,2) +
+    Math.pow((sG-pG)*0.59,2) +
+    Math.pow((sB-pB)*0.11,2)
+  );
+  // ΔE → 적합도 변환 (최적범위 40~90)
+  let colorScore;
+  if (deltaE < 30) colorScore = 55 + (deltaE/30)*25;
+  else if (deltaE <= 90) colorScore = 80 + ((deltaE-30)/60)*15;
+  else colorScore = Math.max(40, 95 - ((deltaE-90)/50)*30);
+
+  // 온도 일치 보정
+  const skinType = state.skinResult;
+  const skinTemp = skinType?.warm > skinType?.cool ? 'warm' :
+                   skinType?.cool > skinType?.warm ? 'cool' : 'neutral';
+  if (skinTemp === product.temp) colorScore = Math.min(97, colorScore + 5);
+  else if (skinTemp !== 'neutral' && product.temp !== 'neutral') colorScore = Math.max(40, colorScore - 8);
+
+  // ── 축 2: Korean Preference (35%) ──
+  // 올리브영 1.8억건 구매데이터 기반 가중치
+  const kpBase = 75; // 기본 베이스
+  const kpAdj = KP_WEIGHT[product.colorGroup] || 0;
+  const kpScore = Math.min(97, Math.max(40, kpBase + kpAdj));
+
+  // ── 축 3: Style Fit (20%) ──
+  // 현재: 발색 안정도 (추후 개인 취향 학습으로 대체)
+  const brightness = state.skinResult?.brightness || 'mid';
+  let styleFitScore = 75;
+  if (brightness === 'light' && product.pigment === 'sheer') styleFitScore = 88;
+  else if (brightness === 'deep' && product.pigment === 'full') styleFitScore = 90;
+  else if (brightness === 'light' && product.pigment === 'full') styleFitScore = 82;
+  else if (brightness === 'mid') styleFitScore = 78;
+
+  // 발림 강도 보정
+  const intensityMod = [0, -4, 0, 4, 6][intensity] || 0;
+
+  // ── 최종 합산 ──
+  const finalRate = Math.round(
+    (colorScore * 0.45) +
+    (kpScore * 0.35) +
+    (styleFitScore * 0.20) +
+    intensityMod
+  );
+
+  return {
+    rate: Math.min(97, Math.max(45, finalRate)),
+    colorScore: Math.round(colorScore),   // Color Match
+    kpScore: Math.round(kpScore),         // Korean Preference
+    styleFitScore: Math.round(styleFitScore) // Style Fit
+  };
+}
+
+// ══════════════════════════════════════
+// 분석 시작
+// ══════════════════════════════════════
+async function startAnalysis() {
+  analysisAborted = false;
+  document.querySelectorAll('#s3 .prog-item').forEach(p => p.classList.remove('done'));
+  document.getElementById('qualityFeedback').style.display = 'none';
+  document.getElementById('s3BackBtn').style.display = 'flex';
+  goTo('s3');
+
+  const steps = ['p1','p2','p3','p4','p5'];
+  for (let i=0; i<steps.length; i++) {
+    await new Promise(r => setTimeout(r, 520));
+    if (analysisAborted) return;
+    document.getElementById(steps[i]).classList.add('done');
+  }
+
+  if (analysisAborted) return;
+
+  const rgb1 = await extractRGB(state.hand1);
+  const rgb2 = await extractRGB(state.hand2);
+
+  if (!rgb1 && !rgb2) {
+    showToast('분석 실패. 사진을 다시 등록해주세요.');
+    goTo('s2'); return;
+  }
+
+  // BALSEC 다중 사진 평균화
+  const validRGBs = [rgb1, rgb2].filter(Boolean);
+  const avg = {
+    r: Math.round(validRGBs.reduce((s,v) => s+v.r, 0) / validRGBs.length),
+    g: Math.round(validRGBs.reduce((s,v) => s+v.g, 0) / validRGBs.length),
+    b: Math.round(validRGBs.reduce((s,v) => s+v.b, 0) / validRGBs.length)
+  };
+  state.skinRGB = avg;
+
+  // 품질 이슈 수집 및 표시
+  const allIssues = validRGBs.flatMap(v => v.quality?.issues || []);
+  const uniqueIssues = [...new Set(allIssues)];
+  if (uniqueIssues.length > 0) {
+    const fb = document.getElementById('qualityFeedback');
+    fb.innerHTML = '⚠️ <b>보정 처리 완료</b><br>' + uniqueIssues.map(i => `· ${i}`).join('<br>') +
+      '<br><span style="font-size:11px; color:var(--muted);">더 정확한 결과를 위해 자연광 촬영을 권장합니다</span>';
+    fb.style.display = 'block';
+    await new Promise(r => setTimeout(r, 1400));
+  }
+
+  // 입술 RGB 추출
+  if (state.face) {
+    extractLipRGB(state.face).then(lip => { state.lipRGB = lip; });
+  }
+
+  const result = classifyBalsecType(avg.r, avg.g, avg.b);
+  state.skinResult = result;
+  state.balsecType = result.typeKey;
+
+  await new Promise(r => setTimeout(r, 300));
+  renderToneResult(avg, result);
+  goTo('s4');
+}
+
+// ══════════════════════════════════════
+// 피부톤 결과 렌더 — BALSEC 발색 구조 출력
+// ══════════════════════════════════════
+function renderToneResult(rgb, result) {
+  const type = BALSEC_TYPES[result.typeKey];
+
+  // TYPE 뱃지 카드
+  document.getElementById('typeNum').textContent = result.typeKey;
+  document.getElementById('typeName').textContent = type.name;
+  document.getElementById('typeSub').textContent  = type.sub;
+
+  // 출력 카드 클래스 (warm / cool / neutral)
+  const card = document.getElementById('toneCard');
+  card.className = 'balsec-output-card ' + type.tempClass;
+
+  // 엔진 타입 뱃지
+  const badge = document.getElementById('toneBadge');
+  badge.className = 'balsec-type-label ' + type.tempClass;
+  badge.textContent = type.engineType;
+
+  // 엔진명 + 서브타이틀
+  document.getElementById('toneHeadline').textContent  = type.name;
+  document.getElementById('toneEngineSub').textContent = type.sub;
+
+  // METRICS
+  document.getElementById('metricColorFlow').textContent    = type.colorFlow;
+  document.getElementById('metricLightReflect').textContent = type.lightReflect;
+  document.getElementById('metricColorDist').textContent    = type.colorDist;
+
+  // ANALYSIS FLOW (3단계)
+  const [f1, f2, f3] = type.analysisFlow;
+  document.getElementById('flow1').textContent = f1;
+  document.getElementById('flow2').textContent = f2;
+  document.getElementById('flow3').textContent = f3;
+
+  // INTERPRETATION
+  document.getElementById('toneCopy').textContent = type.interpretation;
+
+  // BEST COLOR WAY
+  const bestEl = document.getElementById('bestColors');
+  bestEl.innerHTML = type.bestColors
+    .map(c => `<span class="balsec-color-chip">${c}</span>`)
+    .join('');
+
+  // ONE LINE SUMMARY
+  document.getElementById('oneLiner').textContent = type.oneLiner;
+
+  // 발색 방향 구성비 바 차트
+  setTimeout(() => {
+    document.getElementById('warmBar').style.width    = result.warm    + '%';
+    document.getElementById('coolBar').style.width    = result.cool    + '%';
+    document.getElementById('neutralBar').style.width = result.neutral + '%';
+    document.getElementById('warmVal').textContent    = result.warm    + '%';
+    document.getElementById('coolVal').textContent    = result.cool    + '%';
+    document.getElementById('neutralVal').textContent = result.neutral + '%';
+  }, 100);
+
+  // RGB 수치 (하위 호환)
+  document.getElementById('rVal').textContent = rgb.r;
+  document.getElementById('gVal').textContent = rgb.g;
+  document.getElementById('bVal').textContent = rgb.b;
+}
+
+// ══════════════════════════════════════
+// 제품 리스트 렌더
+// ══════════════════════════════════════
+function renderProducts() {
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = PRODUCTS.map(p => {
+    const preview = state.skinRGB ? calcMatchRate(state.skinRGB, p, state.intensity) : null;
+    return `
+      <div class="product-card" id="pc_${p.id}" onclick="selectProduct('${p.id}')">
+        <div class="product-swatch" style="background:${p.hex};"></div>
+        <div class="product-info">
+          <div class="product-brand">${p.brand}</div>
+          <div class="product-name">${p.name}</div>
+          <div class="product-shade">${p.shade}</div>
+          <div style="display:flex; align-items:center; gap:6px; margin-top:5px; flex-wrap:wrap;">
+            <div style="font-size:11px; font-weight:900; color:var(--text);">${p.price}</div>
+            <div style="width:1px; height:9px; background:var(--line);"></div>
+            <div style="font-size:11px; color:var(--muted);">★ ${p.review.score} · ${p.review.count}건</div>
+          </div>
+        </div>
+        ${preview ? `<div class="product-match-preview">${preview.rate}%</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function selectProduct(id) {
+  state.selectedProduct = PRODUCTS.find(p => p.id === id);
+  document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('pc_'+id)?.classList.add('selected');
+  // 선택 즉시 시뮬레이션으로 이동
+  goToSim();
+}
+
+// ══════════════════════════════════════
+// 발색 보정 파라미터 — TYPE별
+// Reflect  : 채도 유지 중심, opacity 높음
+// Absorb   : 채도+밝기 보정, 피부 블렌드 강함
+// Diffuse  : 채도 붕괴 방지, 낮은 opacity
+// Preserve : 최소 보정, 원색 그대로
+// ══════════════════════════════════════
+const BALSEC_RENDER_PARAMS = {
+  '01': { opacityBase:[0.42,0.58,0.72,0.82], satBoost:[1.08,1.12,1.14,1.16], brightAdj:[1.04,1.06,1.06,1.05], blendSkin:0.08, edgeSoft:0.22 },
+  '02': { opacityBase:[0.46,0.62,0.76,0.86], satBoost:[1.10,1.14,1.16,1.18], brightAdj:[1.06,1.08,1.08,1.07], blendSkin:0.14, edgeSoft:0.28 },
+  '03': { opacityBase:[0.40,0.57,0.71,0.81], satBoost:[1.10,1.14,1.16,1.18], brightAdj:[1.02,1.03,1.03,1.02], blendSkin:0.06, edgeSoft:0.20 },
+  '04': { opacityBase:[0.44,0.60,0.74,0.84], satBoost:[1.06,1.10,1.12,1.14], brightAdj:[1.02,1.03,1.03,1.02], blendSkin:0.10, edgeSoft:0.24 },
+  '05': { opacityBase:[0.38,0.54,0.68,0.78], satBoost:[1.04,1.06,1.08,1.10], brightAdj:[1.00,1.01,1.01,1.00], blendSkin:0.18, edgeSoft:0.32 },
+  '06': { opacityBase:[0.40,0.56,0.70,0.80], satBoost:[1.02,1.04,1.06,1.08], brightAdj:[1.00,1.01,1.01,1.00], blendSkin:0.10, edgeSoft:0.24 }
+};
+
+function hexToRgb(hex) {
+  const h = hex.replace('#','');
+  return { r:parseInt(h.substring(0,2),16), g:parseInt(h.substring(2,4),16), b:parseInt(h.substring(4,6),16) };
+}
+
+function boostColor(r, g, b, satBoost, brightAdj) {
+  let nr = clamp(Math.round(r * brightAdj));
+  let ng = clamp(Math.round(g * brightAdj));
+  let nb = clamp(Math.round(b * brightAdj));
+  const avg = (nr + ng + nb) / 3;
+  return {
+    r: clamp(Math.round(avg + (nr - avg) * satBoost)),
+    g: clamp(Math.round(avg + (ng - avg) * satBoost)),
+    b: clamp(Math.round(avg + (nb - avg) * satBoost))
+  };
+}
+
+function blendWithSkin(lR,lG,lB, sR,sG,sB, ratio) {
+  return {
+    r: clamp(Math.round(lR*(1-ratio)+sR*ratio)),
+    g: clamp(Math.round(lG*(1-ratio)+sG*ratio)),
+    b: clamp(Math.round(lB*(1-ratio)+sB*ratio))
+  };
+}
+
+function renderLipCanvas(productHex, intensity, balsecTypeKey, skinRGB) {
+  const canvas = document.getElementById('lipCanvas');
+  if (!canvas) return;
+  const params  = BALSEC_RENDER_PARAMS[balsecTypeKey] || BALSEC_RENDER_PARAMS['06'];
+  const idx     = Math.max(0, Math.min(3, intensity - 1));
+  const opacity = params.opacityBase[idx];
+  const edgeSoft = params.edgeSoft;
+
+  let { r, g, b } = boostColor(...Object.values(hexToRgb(productHex)), params.satBoost[idx], params.brightAdj[idx]);
+  if (skinRGB) {
+    const bl = blendWithSkin(r,g,b, skinRGB.r,skinRGB.g,skinRGB.b, params.blendSkin);
+    r=bl.r; g=bl.g; b=bl.b;
+  }
+
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width  || 150;
+  const H = rect.height || 26;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const rx = H / 2;
+  ctx.beginPath();
+  ctx.moveTo(rx, 0); ctx.lineTo(W-rx, 0); ctx.arcTo(W,0,W,H,rx);
+  ctx.lineTo(W, H-rx); ctx.arcTo(W,H,W-rx,H,rx);
+  ctx.lineTo(rx, H); ctx.arcTo(0,H,0,H-rx,rx);
+  ctx.lineTo(0, rx); ctx.arcTo(0,0,rx,0,rx);
+  ctx.closePath(); ctx.clip();
+
+  // 기본 발색 채우기
+  ctx.globalAlpha = opacity;
+  ctx.fillStyle = `rgb(${r},${g},${b})`;
+  ctx.fillRect(0, 0, W, H);
+
+  // 엣지 페이드 (자연스러운 발색 경계)
+  const edgePx = W * edgeSoft;
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.globalAlpha = 1;
+  const fl = ctx.createLinearGradient(0,0,edgePx,0);
+  fl.addColorStop(0,'rgba(255,255,255,0.9)'); fl.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle = fl; ctx.fillRect(0,0,edgePx,H);
+  const fr = ctx.createLinearGradient(W-edgePx,0,W,0);
+  fr.addColorStop(0,'rgba(255,255,255,0)'); fr.addColorStop(1,'rgba(255,255,255,0.9)');
+  ctx.fillStyle = fr; ctx.fillRect(W-edgePx,0,edgePx,H);
+
+  ctx.globalCompositeOperation = 'source-over';
+
+  // Reflect 타입: 상단 하이라이트 (광택)
+  if (balsecTypeKey==='01'||balsecTypeKey==='03') {
+    const hl = ctx.createLinearGradient(0,0,0,H);
+    hl.addColorStop(0,`rgba(255,255,255,${0.20*opacity})`); hl.addColorStop(0.45,'rgba(255,255,255,0)');
+    ctx.globalAlpha=1; ctx.fillStyle=hl; ctx.fillRect(0,0,W,H);
+  }
+  // Absorb/Preserve 타입: 하단 깊이감
+  if (balsecTypeKey==='02'||balsecTypeKey==='04') {
+    const sh = ctx.createLinearGradient(0,H*0.55,0,H);
+    sh.addColorStop(0,'rgba(0,0,0,0)'); sh.addColorStop(1,`rgba(0,0,0,${0.14*opacity})`);
+    ctx.globalAlpha=1; ctx.fillStyle=sh; ctx.fillRect(0,0,W,H);
+  }
+  ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over';
+
+  // fallback div 동기화
+  document.getElementById('colorPatch').style.background = `rgb(${r},${g},${b})`;
+  document.getElementById('colorPatch').style.opacity = opacity;
+}
+
+// ══════════════════════════════════════
+// 시뮬레이션 화면
+// ══════════════════════════════════════
+function goToSim() {
+  if (!state.selectedProduct) return;
+  const p = state.selectedProduct;
+  document.getElementById('simBrand').textContent = p.brand;
+  document.getElementById('simName').textContent  = p.name;
+  document.getElementById('simShade').textContent = p.shade;
+  document.getElementById('simSwatch').style.background = p.hex;
+
+  const stage  = document.getElementById('simStage');
+  const canvas = document.getElementById('lipCanvas');
+
+  if (state.hand1) {
+    stage.style.backgroundImage    = `url('${state.hand1}')`;
+    stage.style.backgroundSize     = 'cover';
+    stage.style.backgroundPosition = 'center';
+    stage.classList.add('photo-mode');
+    document.getElementById('handShape').style.display = 'none';
+    canvas.style.display = 'block';
+    document.getElementById('colorPatch').style.display = 'none';
+  } else {
+    canvas.style.display = 'none';
+    document.getElementById('colorPatch').style.display = 'block';
+    document.getElementById('colorPatch').style.background = p.hex;
+  }
+
+  updateIntensity(state.intensity);
+  goTo('s6');
+}
+
+function updateIntensity(val) {
+  state.intensity = parseInt(val);
+  document.getElementById('intensitySlider').value = val;
+
+  const labels = { 1:'1회 발색 · 은은하게', 2:'2회 발색 · 자연스럽게', 3:'3회 발색 · 선명하게', 4:'4회 발색 · 풀발색' };
+  document.getElementById('intensityLabel').textContent = labels[val];
+
+  if (state.selectedProduct) {
+    const typeKey = state.balsecType || '06';
+    if (state.hand1) {
+      requestAnimationFrame(() => {
+        renderLipCanvas(state.selectedProduct.hex, state.intensity, typeKey, state.skinRGB);
+      });
+    } else {
+      const params = BALSEC_RENDER_PARAMS[typeKey] || BALSEC_RENDER_PARAMS['06'];
+      const idx = Math.max(0,Math.min(3,state.intensity-1));
+      document.getElementById('colorPatch').style.opacity = params.opacityBase[idx];
+    }
+  }
+
+  if (state.skinRGB && state.selectedProduct) {
+    const match = calcMatchRate(state.skinRGB, state.selectedProduct, state.intensity);
+    renderMatchResult(match);
+  }
+}
+
+function renderMatchResult(match) {
+  document.getElementById('matchRateBig').textContent = match.rate + '%';
+
+  let comment;
+  if (match.rate >= 85) comment = '피부톤과 잘 어울리는 컬러예요. 단, 개인 취향에 따라 다르게 느껴질 수 있어요.';
+  else if (match.rate >= 75) comment = '무난하게 어울려요. 발림 강도를 조절해 나만의 느낌을 찾아보세요.';
+  else if (match.rate >= 65) comment = '착용감은 있지만 다른 컬러도 함께 비교해보는 것을 권장해요.';
+  else comment = '이 컬러는 피부톤·선호도 기준과 조금 다른 방향이에요. 다른 제품을 탐색해보세요.';
+  document.getElementById('matchComment').textContent = comment;
+
+  setTimeout(() => {
+    document.getElementById('barTemp').style.width = match.colorScore + '%';
+    document.getElementById('barDelta').style.width = match.kpScore + '%';
+    document.getElementById('barStable').style.width = match.styleFitScore + '%';
+    document.getElementById('barTempVal').textContent = match.colorScore + '%';
+    document.getElementById('barDeltaVal').textContent = match.kpScore + '%';
+    document.getElementById('barStableVal').textContent = match.styleFitScore + '%';
+  }, 100);
+}
+
+// ══════════════════════════════════════
+// 피드백
+// ══════════════════════════════════════
+function setRating(val) {
+  state.customerRating = val;
+  document.querySelectorAll('.rating-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.val) === val);
+  });
+}
+
+function setOperator(val) {
+  state.operatorMatch = val;
+  document.getElementById('opY').className = 'op-btn' + (val==='Y'?' active-y':'');
+  document.getElementById('opN').className = 'op-btn' + (val==='N'?' active-n':'');
+}
+async function sendToGoogleSheet(sample) {
+  const response = await fetch(SHEET_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8'
+    },
+    body: JSON.stringify(sample)
+  });
+
+  const text = await response.text();
+
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    return { result: 'error', message: '응답 파싱 실패', raw: text };
+  }
+}
+// ══════════════════════════════════════
+// 저장
+// ══════════════════════════════════════
+async function saveSample() {
+  const btn = document.getElementById('saveBtn');
+  if (btn.disabled) return;
+  btn.disabled = true;
+
+  if (!state.skinRGB) { showToast('피부톤 분석을 먼저 완료해주세요'); btn.disabled = false; return; }
+  if (!state.selectedProduct) { showToast('제품을 선택해주세요'); btn.disabled = false; return; }
+
+  const match = calcMatchRate(state.skinRGB, state.selectedProduct, state.intensity);
+  const rejectChecks = document.querySelectorAll('#rejectReasons input[type="checkbox"]:checked');
+  const rejectReasons = Array.from(rejectChecks).map(c => c.value);
+
+  const sample = {
+    id: Date.now(),
+    savedAt: new Date().toISOString(),
+    skinRGB: state.skinRGB,
+    balsecType: state.balsecType,
+    warm: state.skinResult?.warm,
+    cool: state.skinResult?.cool,
+    neutral: state.skinResult?.neutral,
+    brightness: state.skinResult?.brightness,
+    lipRGB: state.lipRGB || null,
+    productId: state.selectedProduct.id,
+    productBrand: state.selectedProduct.brand,
+    productName: state.selectedProduct.name,
+    productHex: state.selectedProduct.hex,
+    productRGB: state.selectedProduct.rgb,
+    productTemp: state.selectedProduct.temp,
+    colorGroup: state.selectedProduct.colorGroup,
+    intensity: state.intensity,
+    matchRate: match?.rate,
+    matchColor: match?.colorScore,
+    matchKP: match?.kpScore,
+    matchStyle: match?.styleFitScore,
+    customerRating: state.customerRating,
+    rejectReasons: rejectReasons,
+    operatorMatch: state.operatorMatch,
+    operatorNote: document.getElementById('operatorNote').value,
+    makeupStyle: document.getElementById('makeupStyleSelect').value,
+    ageGroup: document.getElementById('ageGroupSelect').value
+  };
+
+  // 로컬 저장 (시트 전송과 독립)
+  try {
+    const samples = getsamples();
+    samples.push(sample);
+    localStorage.setItem('balsec_v2_samples', JSON.stringify(samples));
+    renderSaveComplete(sample, samples.length);
+  } catch (e) {
+    console.error('로컬 저장 오류', e);
+  }
+
+  // 시트 전송 (실패해도 화면 이동은 진행)
+  try {
+    const result = await sendToGoogleSheet(sample);
+    if (result.result === 'success') {
+      showToast('Google Sheets 저장 완료');
+    } else {
+      showToast('시트 전송 실패 — 로컬에는 저장됨');
+      console.error(result);
+    }
+  } catch (err) {
+    showToast('전송 오류 — 로컬에는 저장됨');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+
+  goTo('s8');
+}
+
+function getsamples() {
+  try { return JSON.parse(localStorage.getItem('balsec_v2_samples') || '[]'); } catch { return []; }
+}
+
+function renderSaveComplete(sample, total) {
+  document.getElementById('totalCount').textContent = total;
+  const type = BALSEC_TYPES[sample.balsecType] || {};
+  document.getElementById('saveSummaryCard').innerHTML = `
+    <div style="font-size:11px; font-weight:900; color:var(--muted); letter-spacing:.08em; margin-bottom:12px;">SUMMARY</div>
+    <div style="display:grid; gap:0;">
+      <div style="display:flex; justify-content:space-between; font-size:13px; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="color:var(--muted);">저장 일시</span>
+        <span style="font-weight:800;">${new Date(sample.savedAt).toLocaleString('ko-KR')}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="color:var(--muted);">BALSEC TYPE</span>
+        <span style="font-weight:800;">TYPE ${sample.balsecType} · ${type.name||''}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="color:var(--muted);">피부 RGB</span>
+        <span style="font-weight:800;">R${sample.skinRGB.r} G${sample.skinRGB.g} B${sample.skinRGB.b}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="color:var(--muted);">선택 제품</span>
+        <span style="font-weight:800;">${sample.productBrand} ${sample.productName}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="color:var(--muted);">매치율</span>
+        <span style="font-weight:800;">${sample.matchRate}%</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="color:var(--muted);">고객 만족도</span>
+        <span style="font-weight:800;">${sample.customerRating ? sample.customerRating+'점' : '미입력'}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="color:var(--muted);">미선택 이유</span>
+        <span style="font-weight:800; text-align:right; max-width:60%;">${sample.rejectReasons?.length ? sample.rejectReasons.join(', ') : '없음'}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; padding:8px 0;">
+        <span style="color:var(--muted);">운영자 관찰</span>
+        <span style="font-weight:800;">${sample.operatorMatch || '미입력'}</span>
+      </div>
+      ${sample.lipRGB ? `
+      <div style="display:flex; justify-content:space-between; font-size:13px; padding:8px 0; border-top:1px solid var(--line);">
+        <span style="color:var(--muted);">입술 RGB</span>
+        <span style="font-weight:800;">R${sample.lipRGB.r} G${sample.lipRGB.g} B${sample.lipRGB.b}</span>
+      </div>` : ''}
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════
+// 데이터 뷰어
+// ══════════════════════════════════════
+function renderDataView() {
+  const samples = getsamples();
+  document.getElementById('dataCountLabel').textContent = `총 ${samples.length}건의 데이터가 수집되었습니다`;
+  const list = document.getElementById('dataList');
+  if (!samples.length) {
+    list.innerHTML = '<div style="text-align:center; color:var(--muted); padding:40px 0;">아직 저장된 데이터가 없습니다</div>';
+    return;
+  }
+  list.innerHTML = samples.slice().reverse().map(s => `
+    <div style="background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div style="font-size:13px; font-weight:900;">TYPE ${s.balsecType} · ${s.productBrand} ${s.productName}</div>
+        <div style="font-size:14px; font-weight:900; color:var(--accent);">${s.matchRate}%</div>
+      </div>
+      <div style="font-size:11px; color:var(--muted); line-height:1.7;">
+        ${new Date(s.savedAt).toLocaleString('ko-KR')}<br>
+        피부 RGB: R${s.skinRGB.r} G${s.skinRGB.g} B${s.skinRGB.b}<br>
+        온도: Warm${s.warm}% Cool${s.cool}% Neutral${s.neutral}%<br>
+        강도: ${s.intensity}회 · 만족도: ${s.customerRating||'-'}점 · 운영자: ${s.operatorMatch||'-'}
+        ${s.lipRGB ? `<br>입술 RGB: R${s.lipRGB.r} G${s.lipRGB.g} B${s.lipRGB.b}` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function clearAllData() {
+  if (!confirm('저장된 모든 데이터를 삭제할까요?')) return;
+  localStorage.removeItem('balsec_v2_samples');
+  renderDataView();
+  showToast('전체 데이터가 초기화되었습니다');
+}
+
+// ══════════════════════════════════════
+// 재시작
+// ══════════════════════════════════════
+function restartTest() {
+  analysisAborted = true;
+  state = {
+    hand1: null, hand2: null, face: null,
+    skinRGB: null, skinResult: null, balsecType: null,
+    selectedProduct: null, intensity: 3,
+    customerRating: null, operatorMatch: null, lipRGB: null
+  };
+  ['prev1','prev2','prev3'].forEach(id => { document.getElementById(id).style.display='none'; });
+  ['prevImg1','prevImg2','prevImg3'].forEach(id => { document.getElementById(id).src=''; });
+  ['hand1','hand2','face'].forEach(id => { document.getElementById(id).value=''; });
+  document.getElementById('analyzeBtn').disabled = true;
+  document.getElementById('operatorNote').value = '';
+  document.getElementById('makeupStyleSelect').value = '';
+  document.getElementById('ageGroupSelect').value = '';
+  document.querySelectorAll('#rejectReasons input[type="checkbox"]').forEach(c => c.checked = false);
+  document.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('opY').className = 'op-btn';
+  document.getElementById('opN').className = 'op-btn';
+  document.querySelectorAll('#s3 .prog-item').forEach(p => p.classList.remove('done'));
+  document.getElementById('qualityFeedback').style.display = 'none';
+  document.getElementById('s3BackBtn').style.display = 'flex';
+  goTo('s1');
+}
+
+// ══════════════════════════════════════
+// 토스트
+// ══════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ══════════════════════════════════════
+// 화면 전환 (단일 함수 — renderProducts/renderDataView 포함)
+// ══════════════════════════════════════
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.add('active'); window.scrollTo(0, 0); }
+  if (id === 's5') renderProducts();
+  if (id === 's8data') renderDataView();
+}
+
+// ══════════════════════════════════════
+// 피드 카드 데이터 맵
+// ══════════════════════════════════════
+const FEED_DATA = {
+  '01': {
+    badge: 'WARM TYPE',
+    conclusion: '색이 피부 위에서 선명하게 발현',
+    conclusionDesc: '발색이 흡수되지 않고 위로 떠오르는 반사형 구조',
+    colors: [
+      { name: 'Coral',  hex: '#d9705a', reason: 'Warm 기반 · 발색 확장성 우수 · 피부톤 자연 연결' },
+      { name: 'Peach',  hex: '#e8b48a', reason: '밝기와 채도 균형 · 생기 있는 인상 연출' },
+      { name: 'Brick',  hex: '#8b3a2a', reason: '깊이감 보정 · 발색 안정성 높음 · 세련된 마무리' }
+    ]
+  },
+  '02': {
+    badge: 'WARM DEEP',
+    conclusion: '깊이 있는 색감이 안정적으로 정착',
+    conclusionDesc: '색이 피부에 스며드는 흡수형 구조, 진한 웜 컬러 최적',
+    colors: [
+      { name: 'Brick',      hex: '#8b3a2a', reason: '깊이 있는 발색 · 세련된 마무리' },
+      { name: 'Terracotta', hex: '#c46a3a', reason: '웜 기반 · 자연스러운 피부 연결' },
+      { name: 'Deep Coral', hex: '#c8503a', reason: '채도 안정 · 무게감 있는 마무리' }
+    ]
+  },
+  '03': {
+    badge: 'COOL LIGHT',
+    conclusion: '컬러가 피부 위에서 또렷하게 대비',
+    conclusionDesc: '차갑고 투명한 피부 특성이 핑크·로즈를 선명하게 만듦',
+    colors: [
+      { name: 'Cool Pink',  hex: '#e88098', reason: '쿨톤 특성 극대화 · 선명한 대비감' },
+      { name: 'Rose',       hex: '#c85878', reason: '투명한 피부에 자연 연결' },
+      { name: 'Raspberry',  hex: '#a83060', reason: '채도 높음 · 임팩트 있는 마무리' }
+    ]
+  },
+  '04': {
+    badge: 'COOL MEDIUM',
+    conclusion: '차분하고 세련된 발색 구조',
+    conclusionDesc: '깊이 있는 쿨 계열에서 가장 안정적인 발색',
+    colors: [
+      { name: 'Mauve',    hex: '#9870a0', reason: '모브 계열 · 세련된 쿨 표현' },
+      { name: 'Burgundy', hex: '#6a2040', reason: '딥 쿨 · 고급스러운 마무리' },
+      { name: 'Deep Rose',hex: '#b04870', reason: '로즈 계열 · 자연스러운 연결' }
+    ]
+  },
+  '05': {
+    badge: 'NEUTRAL SOFT',
+    conclusion: '부드러운 색감이 자연스럽게 어우러짐',
+    conclusionDesc: '웜·쿨 균형 피부, 뮤트 계열이 가장 편안하게 표현',
+    colors: [
+      { name: 'Rose Beige', hex: '#c8907a', reason: '뉴트럴 기반 · 가장 자연스러운 연결' },
+      { name: 'Muted Rose', hex: '#b07878', reason: '채도 낮음 · 부드러운 마무리' },
+      { name: 'Soft Red',   hex: '#c05858', reason: '세련된 뉴트럴 레드 · 안정감' }
+    ]
+  },
+  '06': {
+    badge: 'NEUTRAL CLEAR',
+    conclusion: '폭넓은 컬러를 자유롭게 소화',
+    conclusionDesc: '밝기와 균형 잡힌 언더톤 덕분에 다양한 컬러 표현 가능',
+    colors: [
+      { name: 'Coral Pink',  hex: '#e07878', reason: '뉴트럴 특성 · 선명한 발색 가능' },
+      { name: 'Neutral Red', hex: '#c04848', reason: '폭넓은 소화력 · 안정적 발색' },
+      { name: 'Clear Rose',  hex: '#d06880', reason: '클리어 로즈 · 맑은 마무리' }
+    ]
+  }
+};
+
+// ══════════════════════════════════════
+// 피드 카드 렌더
+// ══════════════════════════════════════
+function renderFeedCard() {
+  const rgb  = state.skinRGB;
+  const res  = state.skinResult;
+  const type = BALSEC_TYPES[state.balsecType] || {};
+  const feed = FEED_DATA[state.balsecType] || FEED_DATA['06'];
+  if (!rgb || !res) return;
+
+  // CLIENT ID
+  const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const seq = String(Math.floor(Math.random() * 9000) + 1000);
+  document.getElementById('fcClientId').textContent = dateStr + ' · ' + seq;
+  document.getElementById('fcReportLabel').textContent = 'BALSEC LAB REPORT · TYPE ' + (state.balsecType || '—');
+
+  // 배지 · 타입명
+  document.getElementById('fcTypeBadge').textContent = feed.badge;
+  document.getElementById('fcTypeName').textContent  = (type.name || '—') + '\nSkin';
+
+  // RGB
+  document.getElementById('fcRgbValue').textContent = rgb.r + ' · ' + rgb.g + ' · ' + rgb.b;
+
+  // 밝기 바
+  const lPct = Math.round((res.L || 0.5) * 100);
+  document.getElementById('fcBrightnessVal').textContent = lPct >= 62 ? '높음' : lPct >= 42 ? '중간' : '낮음';
+  document.getElementById('fcBrightnessBar').style.width = lPct + '%';
+  document.getElementById('fcBrightnessDesc').textContent =
+    lPct >= 62 ? '피부 반사력 높음 → 색이 위로 떠오르는 구조' : '피부 흡수형 구조 → 발색이 안정적으로 정착';
+
+  // Warm 바
+  document.getElementById('fcWarmVal').textContent = res.warm + '%';
+  document.getElementById('fcWarmBar').style.width = res.warm + '%';
+  document.getElementById('fcWarmDesc').textContent =
+    res.warm >= 50 ? 'Warm 성향 우세 → 따뜻한 색 자연스럽게 확장' : 'Warm 성향 낮음';
+
+  // Cool 바
+  document.getElementById('fcCoolVal').textContent = res.cool + '%';
+  document.getElementById('fcCoolBar').style.width = res.cool + '%';
+  document.getElementById('fcCoolDesc').textContent =
+    res.cool >= 50 ? 'Cool 성향 우세 → 색이 차갑고 선명하게 표현' : 'Cool 영향 제한 → 색 왜곡 없음';
+
+  // Conclusion
+  document.getElementById('fcConclusionTitle').textContent = feed.conclusion;
+  document.getElementById('fcConclusionDesc').textContent  = feed.conclusionDesc;
+
+  // 추천 컬러 3개
+  document.getElementById('fcColorList').innerHTML = feed.colors.map(c => `
+    <div class="fc-color-item">
+      <div class="fc-color-chip" style="background:${c.hex};"></div>
+      <div>
+        <div class="fc-color-name">${c.name}</div>
+        <div class="fc-color-reason">${c.reason}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // 손등 이미지
+  const img      = document.getElementById('fcHandImg');
+  const photoBox = document.getElementById('fcPhotoBox');
+  const imgSrc   = state.hand1 || state.hand2 || '';
+  if (imgSrc) {
+    img.src = imgSrc;
+    img.style.display = 'block';
+    photoBox.classList.remove('fc-no-image');
+  } else {
+    img.src = '';
+    img.style.display = 'none';
+    photoBox.classList.add('fc-no-image');
+  }
+}
+
+// ══════════════════════════════════════
+// 피드 화면 진입
+// ══════════════════════════════════════
+function goToFeed() {
+  renderFeedCard();
+  goTo('s9');
+}
+
+// ══════════════════════════════════════
+// 피드 카드 다운로드 (PC / Android)
+// ══════════════════════════════════════
+async function downloadFeedCard() {
+  const target = document.getElementById('feedCardExport');
+  try {
+    const canvas = await html2canvas(target, {
+      backgroundColor: '#ffffff',
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      logging: false
+    });
+    const ts   = new Date().toISOString().replace(/[-:T]/g,'').slice(0,14);
+    const link = document.createElement('a');
+    link.download = 'balsec_feed_' + ts + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch (e) {
+    showToast('다운로드 실패 — 이미지 열기를 이용해주세요');
+    console.error(e);
+  }
+}
+
+// ══════════════════════════════════════
+// 피드 카드 새 창 열기 (iPhone Safari 대응)
+// ══════════════════════════════════════
+function openFeedImage() {
+  const target = document.getElementById('feedCardExport');
+  html2canvas(target, {
+    backgroundColor: '#ffffff',
+    scale: 3,
+    useCORS: true,
+    allowTaint: true,
+    logging: false
+  }).then(canvas => {
+    const url = canvas.toDataURL('image/png');
+    const win = window.open('', '_blank');
+    if (!win) { showToast('팝업이 차단됨 — 브라우저 설정에서 팝업을 허용해주세요'); return; }
+    win.document.write(
+      '<!DOCTYPE html><html><head>' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>BALSEC FEED</title></head>' +
+      '<body style="margin:0;background:#111;text-align:center;">' +
+      '<img src="' + url + '" style="width:100%;max-width:540px;display:block;margin:0 auto;">' +
+      '<p style="color:#888;font-size:13px;padding:16px;font-family:sans-serif;">' +
+      '📱 이미지를 길게 눌러 저장하세요</p></body></html>'
+    );
+    win.document.close();
+  }).catch(e => {
+    showToast('이미지 생성 실패');
+    console.error(e);
+  });
+}
+</script>
+</body>
+</html>
